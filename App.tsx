@@ -18,6 +18,8 @@ import {useAtom} from 'jotai';
 import {isLoggedInAtom} from './src/store/atom/auth';
 import SplashScreenPage from './src/page/SplashScreen';
 import AuthPage from './src/page/AuthPage';
+import SignupPage from './src/page/SignupPage';
+import SigninPage from './src/page/SigninPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +88,9 @@ export default function App(): JSX.Element {
             options={{headerShown: false}}
           />
         )}
+        {/* signuppage & loginpage */}
+        <Stack.Screen name="Signup" component={SignupPage} />
+        <Stack.Screen name="Signin" component={SigninPage} />
         <Stack.Screen name="Search" component={SearchPage} />
       </Stack.Navigator>
     </NavigationContainer>
