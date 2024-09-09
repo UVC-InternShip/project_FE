@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable} from 'react-native';
+import {Pressable, View} from 'react-native';
 
 interface ButtonProps {
   onPress: () => void;
@@ -12,6 +12,8 @@ interface ButtonProps {
   };
   paddingHorizontal?: number;
   paddingVertical?: number;
+  style?: View['props']['style'];
+  disabled?: boolean;
 }
 
 function CustomButton({
@@ -20,15 +22,21 @@ function CustomButton({
   hitSlop = {left: 0, right: 0, top: 0, bottom: 0}, // 기본값 설정
   paddingHorizontal,
   paddingVertical,
+  style,
+  disabled,
 }: ButtonProps) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       hitSlop={hitSlop}
-      style={{
-        paddingHorizontal,
-        paddingVertical,
-      }}>
+      style={[
+        {
+          paddingHorizontal,
+          paddingVertical,
+        },
+        style,
+      ]}>
       {children}
     </Pressable>
   );

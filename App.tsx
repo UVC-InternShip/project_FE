@@ -6,7 +6,7 @@
  */
 
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigator from './src/router/TabNav';
 import {Text, View} from 'react-native';
@@ -26,6 +26,8 @@ const Stack = createNativeStackNavigator();
 export default function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [isLogin, setIsLogin] = useAtom(isLoggedInAtom);
+  const [isNavigatorReady, setIsNavigatorReady] = useState(false);
+  const navigatorRef = useRef(null);
   useEffect(() => {
     // SplashScreen.show();
     setTimeout(() => {
@@ -53,7 +55,9 @@ export default function App(): JSX.Element {
     return <SplashScreenPage />;
   }
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigatorRef}
+      onReady={() => setIsNavigatorReady(true)}>
       <Stack.Navigator>
         {isLogin ? (
           <>
@@ -89,8 +93,16 @@ export default function App(): JSX.Element {
           />
         )}
         {/* signuppage & loginpage */}
-        <Stack.Screen name="Signup" component={SignupPage} />
-        <Stack.Screen name="Signin" component={SigninPage} />
+        <Stack.Screen name="Signup">
+          {props => (
+            <SignupPage {...props} isNavigatorReady={isNavigatorReady} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Signin">
+          {props => (
+            <SigninPage {...props} isNavigatorReady={isNavigatorReady} />
+          )}
+        </Stack.Screen>
         <Stack.Screen name="Search" component={SearchPage} />
       </Stack.Navigator>
     </NavigationContainer>
