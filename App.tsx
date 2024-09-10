@@ -20,6 +20,7 @@ import SplashScreenPage from './src/page/SplashScreen';
 import AuthPage from './src/page/AuthPage';
 import SignupPage from './src/page/SignupPage';
 import SigninPage from './src/page/SigninPage';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ export default function App(): JSX.Element {
   const [isLogin, setIsLogin] = useAtom(isLoggedInAtom);
   const [isNavigatorReady, setIsNavigatorReady] = useState(false);
   const navigatorRef = useRef(null);
+  const queryClient = new QueryClient();
   useEffect(() => {
     // SplashScreen.show();
     setTimeout(() => {
@@ -55,56 +57,60 @@ export default function App(): JSX.Element {
     return <SplashScreenPage />;
   }
   return (
-    <NavigationContainer
-      ref={navigatorRef}
-      onReady={() => setIsNavigatorReady(true)}>
-      <Stack.Navigator>
-        {isLogin ? (
-          <>
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer
+        ref={navigatorRef}
+        onReady={() => setIsNavigatorReady(true)}>
+        <Stack.Navigator>
+          {isLogin ? (
+            <>
+              <Stack.Screen
+                name="Main"
+                component={TabNavigator}
+                options={{
+                  header: ({navigation}) => (
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text style={{flex: 1, textAlign: 'center'}}>
+                        바꾸자고
+                      </Text>
+                      <Icon.Button
+                        onPress={() => navigation.navigate('Search')}
+                        name="search"
+                        backgroundColor={'#fff'}
+                        color={'#000'}
+                      />
+                      <Icon.Button
+                        onPress={() => console.log('This is a button!')}
+                        name="notifications"
+                        backgroundColor={'#fff'}
+                        color={'#000'}
+                      />
+                    </View>
+                  ),
+                }}
+              />
+            </>
+          ) : (
             <Stack.Screen
-              name="Main"
-              component={TabNavigator}
-              options={{
-                header: ({navigation}) => (
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text style={{flex: 1, textAlign: 'center'}}>바꾸자고</Text>
-                    <Icon.Button
-                      onPress={() => navigation.navigate('Search')}
-                      name="search"
-                      backgroundColor={'#fff'}
-                      color={'#000'}
-                    />
-                    <Icon.Button
-                      onPress={() => console.log('This is a button!')}
-                      name="notifications"
-                      backgroundColor={'#fff'}
-                      color={'#000'}
-                    />
-                  </View>
-                ),
-              }}
+              name="Auth"
+              component={AuthPage}
+              options={{headerShown: false}}
             />
-          </>
-        ) : (
-          <Stack.Screen
-            name="Auth"
-            component={AuthPage}
-            options={{headerShown: false}}
-          />
-        )}
-        {/* signuppage & loginpage */}
-        <Stack.Screen name="Signup">
-          {props => (
-            <SignupPage {...props} isNavigatorReady={isNavigatorReady} />
           )}
-        </Stack.Screen>
-        <Stack.Screen name="Signin">
-          {props => (
-            <SigninPage {...props} isNavigatorReady={isNavigatorReady} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="Search" component={SearchPage} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* signuppage & loginpage */}
+          <Stack.Screen name="Signup">
+            {props => (
+              <SignupPage {...props} isNavigatorReady={isNavigatorReady} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="Signin">
+            {props => (
+              <SigninPage {...props} isNavigatorReady={isNavigatorReady} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="Search" component={SearchPage} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 }
