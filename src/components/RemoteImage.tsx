@@ -1,11 +1,21 @@
-// import React, { useState } from "react";
-// import {useQuery} from '@tanstack/react-query'
-// interface RemoteImageProps {
-//     imageUrlQueryKey: string[];
-//     width?: number;
-//     height?: number;
-// }
+import React from 'react';
 
-// function RemoteImage({ imageUrlQueryKey, width, height }: RemoteImageProps): JSX.Element {
-//     const {data: imageUrl, isLoading, isError, error} = useQuery
-// }
+import {Image} from 'react-native';
+
+interface RemoteImageProps {
+  imageUrl: string;
+  width?: number;
+  height?: number;
+}
+
+function RemoteImage({imageUrl, width, height}: RemoteImageProps): JSX.Element {
+  return (
+    <Image
+      source={{uri: imageUrl}}
+      style={{width: width, height: height}}
+      resizeMode="cover"
+    />
+  );
+}
+
+export default RemoteImage;
