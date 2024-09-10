@@ -21,6 +21,7 @@ import AuthPage from './src/page/AuthPage';
 import SignupPage from './src/page/SignupPage';
 import SigninPage from './src/page/SigninPage';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import ProductRegisterPage from './src/page/ProductRegisterPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -109,6 +110,10 @@ export default function App(): JSX.Element {
             )}
           </Stack.Screen>
           <Stack.Screen name="Search" component={SearchPage} />
+          <Stack.Screen
+            name="ProductRegister"
+            component={ProductRegisterPage}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
