@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 import CustomButton from '../components/Button';
 import Typo from '../components/Typo';
@@ -16,21 +16,52 @@ function Home({navigation}: HomeProps): JSX.Element {
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const fadeIn = () => {
+  // const fadeIn = () => {
+  //   Animated.timing(fadeAnim, {
+  //     toValue: 1,
+  //     duration: 1000,
+  //     useNativeDriver: true,
+  //   }).start();
+  // };
+  // const fadeOut = () => {
+  //   // Will change fadeAnim value to 0 in 3 seconds
+  //   Animated.timing(fadeAnim, {
+  //     toValue: 0,
+  //     duration: 3000,
+  //     useNativeDriver: true,
+  //   }).start();
+  // };
+
+  // useEffect(() => {
+  //   if (showButton) {
+  //     fadeIn();
+  //   } else {
+  //     fadeOut();
+  //   }
+  // }, [showButton]);
+  const fadeIn = useCallback(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1000,
       useNativeDriver: true,
     }).start();
-  };
-  const fadeOut = () => {
-    // Will change fadeAnim value to 0 in 3 seconds
+  }, [fadeAnim]);
+
+  const fadeOut = useCallback(() => {
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 3000,
+      duration: 1000,
       useNativeDriver: true,
     }).start();
-  };
+  }, [fadeAnim]);
+
+  useEffect(() => {
+    if (showButton) {
+      fadeIn();
+    } else {
+      fadeOut();
+    }
+  }, [showButton, fadeIn, fadeOut]);
 
   const pressBarterBtn = () => {
     navigation.navigate('ProductRegister', {type: 'barter'});

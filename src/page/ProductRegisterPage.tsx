@@ -1,7 +1,13 @@
 import {useRoute} from '@react-navigation/native';
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Alert, ImageURISource, StyleSheet, View} from 'react-native';
 import Typo from '../components/Typo';
+import {
+  launchCamera,
+  launchImageLibrary,
+  CameraOptions,
+  ImagePickerResponse,
+} from 'react-native-image-picker';
 
 function ProductRegisterPage(): JSX.Element {
   const route = useRoute();
@@ -10,6 +16,30 @@ function ProductRegisterPage(): JSX.Element {
   const [tradeType, setTradeType] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [image, setImage] = useState<ImageURISource>({uri: ''});
+
+  const pressShotCamera = () => {
+    const options: CameraOptions = {
+      mediaType: 'photo',
+      cameraType: 'back',
+      saveToPhotos: true,
+      quality: 1,
+    };
+
+    launchCamera(options, (response: ImagePickerResponse) => {
+      if (response.didCancel) {
+        Alert.alert('촬영이 취소되었습니다.');
+      } else if (response.errorMessage) {
+        Alert.alert('Error : ' + response.errorMessage);
+      } else {
+        if (response.assets !== null) {
+          const uri = response.assets[0].uri;
+          const souce = {uri: uri};
+          setImage(souce);
+        }
+      }
+    });
+  };
 
   return (
     <View style={styles.container}>
