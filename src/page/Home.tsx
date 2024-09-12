@@ -5,7 +5,7 @@ import Typo from '../components/Typo';
 import {useProductList} from '../store/query/useGetProductList';
 import {NavigationProp} from '@react-navigation/native';
 import ProductCard from '../components/ProductCard';
-import {dummyData} from '../assets/\bdummy';
+import {dummyData} from '../assets/dummy';
 
 interface HomeProps {
   navigation: NavigationProp<any>;

@@ -1,6 +1,6 @@
 import {useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {dummyData} from '../assets/\bdummy';
+import {dummyData} from '../assets/dummy';
 import {IProduct} from '../interface/interface';
 import Typo from '../components/Typo';
 import {
