@@ -13,6 +13,10 @@ import {Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SearchPage from './src/page/Search';
 import SplashScreen from 'react-native-splash-screen';
+import Transaction from './src/page/Transaction';
+import modifyUserInfo from './src/page/ModifyUserInfo';
+import MyPoint from './src/page/MyPoint';
+import Reputation from './src/page/Reputation';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAtom} from 'jotai';
 import {isLoggedInAtom} from './src/store/atom/auth';
@@ -115,7 +119,28 @@ export default function App(): JSX.Element {
             name="ProductRegister"
             component={ProductRegisterPage}
           />
+          <Stack.Screen
+            name="modifyUserInfo"
+            component={modifyUserInfo}
+            options={{ title: '프로필 수정'}}
+          />
+          <Stack.Screen
+            name="Transaction"
+            component={Transaction}
+            options={{ title: '나의 활동'}}
+          />
+          <Stack.Screen
+            name="MyPoint"
+            component={MyPoint}
+            options={{ title: '내 포인트'}}
+          />
+          <Stack.Screen
+            name="Reputation"
+            component={Reputation}
+            options={{ title: '받은 평가'}}
+          />
           <Stack.Screen name="ProductDetail" component={ProductDetailPage} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
