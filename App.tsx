@@ -26,6 +26,7 @@ import SignupPage from './src/page/SignupPage';
 import SigninPage from './src/page/SigninPage';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ProductRegisterPage from './src/page/ProductRegisterPage';
+import ProductDetailPage from './src/page/ProductDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -138,6 +139,8 @@ export default function App(): JSX.Element {
             component={Reputation}
             options={{ title: '받은 평가'}}
           />
+          <Stack.Screen name="ProductDetail" component={ProductDetailPage} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
