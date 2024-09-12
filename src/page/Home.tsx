@@ -1,9 +1,11 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Animated, StyleSheet, Text, View} from 'react-native';
+import {Animated, FlatList, StyleSheet, Text, View} from 'react-native';
 import CustomButton from '../components/Button';
 import Typo from '../components/Typo';
 import {useProductList} from '../store/query/useGetProductList';
 import {NavigationProp} from '@react-navigation/native';
+import ProductCard from '../components/ProductCard';
+import {dummyData} from '../assets/\bdummy';
 
 interface HomeProps {
   navigation: NavigationProp<any>;
@@ -14,7 +16,7 @@ function Home({navigation}: HomeProps): JSX.Element {
   const {isLoading, data: products} = useProductList();
   // const navigation = useNavigation();
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  // const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // const fadeIn = () => {
   //   Animated.timing(fadeAnim, {
@@ -39,54 +41,61 @@ function Home({navigation}: HomeProps): JSX.Element {
   //     fadeOut();
   //   }
   // }, [showButton]);
-  const fadeIn = useCallback(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+  // const fadeIn = useCallback(() => {
+  //   Animated.timing(fadeAnim, {
+  //     toValue: 1,
+  //     duration: 1000,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }, [fadeAnim]);
 
-  const fadeOut = useCallback(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+  // const fadeOut = useCallback(() => {
+  //   Animated.timing(fadeAnim, {
+  //     toValue: 0,
+  //     duration: 1000,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }, [fadeAnim]);
 
-  useEffect(() => {
-    if (showButton) {
-      fadeIn();
-    } else {
-      fadeOut();
-    }
-  }, [showButton, fadeIn, fadeOut]);
+  // useEffect(() => {
+  //   if (showButton) {
+  //     fadeIn();
+  //   } else {
+  //     fadeOut();
+  //   }
+  // }, [showButton, fadeIn, fadeOut]);
 
-  const pressBarterBtn = () => {
-    navigation.navigate('ProductRegister', {type: 'barter'});
+  // const pressBarterBtn = () => {
+  //   navigation.navigate('ProductRegister', {type: 'barter'});
+  // };
+
+  // const pressShareBtn = () => {
+  //   navigation.navigate('ProductRegister', {type: 'share'});
+  // };
+
+  const pressRegisterBtn = () => {
+    navigation.navigate('ProductRegister', {type: 'trade'});
   };
 
-  const pressShareBtn = () => {
-    navigation.navigate('ProductRegister', {type: 'share'});
-  };
+  // const pressBtn = () => {
+  //   setShowButton(!showButton);
+  //   if (showButton) {
+  //     fadeOut();
+  //   } else {
+  //     fadeIn();
+  //   }
+  // };
 
-  const pressBtn = () => {
-    setShowButton(!showButton);
-    if (showButton) {
-      fadeOut();
-    } else {
-      fadeIn();
-    }
+  const handleProductPress = (id: number) => {
+    navigation.navigate('ProductDetail', {productId: id});
   };
   return (
     <View style={styles.container}>
-      <Text>This is Home Screen</Text>
-      <CustomButton style={styles.buttonContainer} onPress={pressBtn}>
+      <CustomButton style={styles.buttonContainer} onPress={pressRegisterBtn}>
         <Typo color="black">물건 등록</Typo>
       </CustomButton>
 
-      {showButton && (
+      {/* {showButton && (
         <Animated.View
           style={[styles.additionalButtonsContainer, {opacity: fadeAnim}]}>
           <CustomButton
@@ -98,13 +107,31 @@ function Home({navigation}: HomeProps): JSX.Element {
             <Typo color="black">나눔</Typo>
           </CustomButton>
         </Animated.View>
-      )}
+      )} */}
+      <FlatList
+        data={dummyData}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => (
+          <ProductCard
+            imageUrl={item.images[0]}
+            title={item.title}
+            description={item.description}
+            content_type={item.content_type}
+            purpose={item.purpose}
+            status={item.status}
+            created_at={item.created_at}
+            onPress={() => handleProductPress(item.id)}
+          />
+        )}
+        contentContainerStyle={styles.listContainer}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
@@ -122,6 +149,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     backgroundColor: '#f2f222',
+    zIndex: 10,
   },
   additionalButtonsContainer: {
     position: 'absolute',
@@ -140,6 +168,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#f2f222',
     marginBottom: 10, // 버튼 간 간격 조절
+  },
+  listContainer: {
+    paddingHorizontal: 16,
+    gap: 16,
+    paddingTop: 16,
   },
 });
 

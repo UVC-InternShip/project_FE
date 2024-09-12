@@ -14,6 +14,7 @@ interface ButtonProps {
   paddingVertical?: number;
   style?: View['props']['style'];
   disabled?: boolean;
+  selected?: boolean;
 }
 
 function CustomButton({
@@ -24,6 +25,7 @@ function CustomButton({
   paddingVertical,
   style,
   disabled,
+  selected,
 }: ButtonProps) {
   return (
     <Pressable
@@ -34,6 +36,7 @@ function CustomButton({
         {
           paddingHorizontal,
           paddingVertical,
+          backgroundColor: selected ? 'black' : 'white',
         },
         style,
       ]}>
