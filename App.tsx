@@ -15,6 +15,7 @@ import SigninPage from './src/page/SigninPage';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ProductRegisterPage from './src/page/ProductRegisterPage';
 import ProductDetail from './src/page/ProductDetail'; // ProductDetail 페이지 임포트
+import ProductInputPage from './src/page/ProductInputPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +89,11 @@ const MainNavigator = () => (
       component={ProductDetail}  // ProductDetail 페이지 추가
       options={{title: '상품 상세 정보'}}
     />
+    <Stack.Screen 
+          name="ProductInput" 
+          component={ProductInputPage} 
+          options={{ title: '상품 등록' }} 
+        />
   </Stack.Navigator>
 );
 

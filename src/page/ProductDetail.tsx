@@ -1,18 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import CustomButton from '../components/Button'; // CustomButton 컴포넌트 임포트
-import { useNavigation } from '@react-navigation/native'; // 네비게이션을 사용하기 위해 추가
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // 네비게이션을 사용하기 위해 추가
 
 function ProductDetail({ route }) {
   const { product } = route.params;
-  console.log("🚀 ~ ProductDetail ~ product::::::::::", product)
-
-  // 탭 전환을 위한 상태 관리
-  const [activeTab, setActiveTab] = useState('상품 정보');
+  const [activeTab, setActiveTab] = useState('상품 정보');  // 기본값을 '상품 정보'로 설정
   const [suggestions, setSuggestions] = useState([]); // 제안 목록 상태
   const [loading, setLoading] = useState(false); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const navigation = useNavigation(); // 네비게이션 훅 사용
+
+  // 상품 상세 정보를 API를 통해 다시 가져오는 함수
+  const fetchProductDetails = async (contentsId: number) => {
+    setLoading(true); // 로딩 시작
+    try {
+      const response = await fetch('http://10.0.2.2:3000/api/contents/listContents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contentsId }), // 선택한 contentsId를 본문에 포함
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // 상품 상세 페이지로 이동하면서 API에서 가져온 상품 데이터를 전달
+        if (data.result[0].contentsId !== product.contentsId) {
+          navigation.navigate('ProductDetail', { product: data.result[0] });
+        }
+      } else {
+        console.error('상품 상세 정보를 가져오는 데 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('API 요청 에러:', error);
+    } finally {
+      setLoading(false); // 로딩 종료
+    }
+  };
+
+  // 페이지가 다시 포커스될 때마다 상품 데이터를 새로 가져오기
+  useFocusEffect(
+    useCallback(() => {
+      fetchProductDetails(product.contentsId); // 페이지 포커스될 때 데이터를 다시 로드
+      setActiveTab('상품 정보');  // 탭을 기본값 '상품 정보'로 설정
+    }, [product.contentsId])
+  );
 
   // 제안 목록 API 호출
   const fetchSuggestions = async () => {
@@ -41,34 +73,6 @@ function ProductDetail({ route }) {
     }
   };
 
-  // 상품 상세 정보를 API를 통해 다시 가져오는 함수
-  const fetchProductDetails = async (contentsId: number) => {
-    setLoading(true); // 로딩 시작
-    try {
-      const response = await fetch('http://10.0.2.2:3000/api/contents/listContents', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ contentsId }), // 선택한 contentsId를 본문에 포함
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // 상품 상세 페이지로 이동하면서 API에서 가져온 상품 데이터를 전달
-        if (data.result.contentsId !== product.contentsId) {
-          navigation.navigate('ProductDetail', { product: data.result });
-        }
-      } else {
-        console.error('상품 상세 정보를 가져오는 데 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('API 요청 에러:', error);
-    } finally {
-      setLoading(false); // 로딩 종료
-    }
-  };
-
-  // 제안 목록을 가져오기 위해 useEffect 사용
   useEffect(() => {
     if (activeTab === '제안 목록') {
       fetchSuggestions();
@@ -154,13 +158,19 @@ function ProductDetail({ route }) {
           style={[styles.tabButton, activeTab === '상품 정보' && styles.activeTabButton]}
           onPress={() => setActiveTab('상품 정보')}
         >
-          <Text style={[styles.tabText, activeTab === '상품 정보' && styles.activeTabText]}>상품 정보</Text>
+          <Text style={[styles.tabText, activeTab === '상품 정보' && styles.activeTabText]}>
+            상품 정보
+          </Text>
         </TouchableOpacity>
+
+        {/* 제안 목록 버튼에 갯수 추가 */}
         <TouchableOpacity
           style={[styles.tabButton, activeTab === '제안 목록' && styles.activeTabButton]}
           onPress={() => setActiveTab('제안 목록')}
         >
-          <Text style={[styles.tabText, activeTab === '제안 목록' && styles.activeTabText]}>제안 목록</Text>
+          <Text style={[styles.tabText, activeTab === '제안 목록' && styles.activeTabText]}>
+            제안 목록 ({suggestions.length}) {/* 제안 목록 갯수 표시 */}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -177,13 +187,13 @@ function ProductDetail({ route }) {
 
       {/* 하단 제안하기 버튼 */}
       <CustomButton
-        onPress={() => console.log('제안하기 버튼 눌림')}
-        paddingHorizontal={20}
-        paddingVertical={15}
-        style={styles.proposeButton}
-      >
-        <Text style={styles.proposeButtonText}>제안하기</Text>
-      </CustomButton>
+  onPress={() => navigation.navigate('ProductInput')} // 상품 입력 페이지로 이동
+  paddingHorizontal={20}
+  paddingVertical={15}
+  style={styles.proposeButton}
+>
+  <Text style={styles.proposeButtonText}>제안하기</Text>
+</CustomButton>
     </View>
   );
 }
