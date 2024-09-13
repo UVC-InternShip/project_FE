@@ -1,53 +1,97 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
+import { API_URL } from '../../config';
+import axios from 'axios';
 
 function Transaction(): JSX.Element {
-  const [selectedTab, setSelectedTab] = useState('물물교환');
+  const [selectedTab, setSelectedTab] = useState('교환');
+  const [tradeItems, setTradeItems] = useState([]);
+  const [donationItems, setDonationItems] = useState([]);
 
-  // 물물교환 리스트 예시 데이터
-  const tradeItems = [
-    { id: '1', name: '맥북 2021년형', status: '교환 완료' },
-    { id: '2', name: '맥북 2021년형', status: '제안 중' },
-    { id: '3', name: '맥북 2021년형', status: '제안 중' },
-  ];
+  useEffect(() => {
+    fetchUserContents();
+  }, []);
 
-  // 나눔 리스트 예시 데이터
-  const donationItems = [
-    { id: '1', name: '맥북 2021년형', status: '나눔 완료' },
-  ];
+  const fetchUserContents = async () => {
+    try {
+      const userId = 1;
+      const response = await axios.post(`${API_URL}/contents/listUser`, { userId: userId });
+      const contents = response.data.result;
+      
+      const trades = [];
+      const donations = [];
+      
+      contents.forEach(content => {
+        const item = {
+          id: content.contentsId.toString(),
+          name: content.title,
+          status: content.status,
+          description: content.description,
+        };
+        
+        if (content.purpose === '교환') {
+          trades.push(item);
+        } else if (content.purpose === '나눔') {
+          donations.push(item);
+        }
+      });
+
+      setTradeItems(trades);
+      setDonationItems(donations);
+      
+    } catch (error) {
+      console.log('불러오기 실패:', error);
+      throw error;
+    }
+  };
 
   // 리스트 아이템을 렌더링하는 함수
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Image style={styles.itemImage} source={{ uri: 'https://via.placeholder.com/50' }} />
-      <View style={styles.itemTextContainer}>
-        <Text style={styles.itemName}>{item.name}</Text>
+  const renderItem = ({ item }) => {
+    let statusStyle;
+    let statusText;
+
+    switch(item.status) {
+      case '대기중':
+        statusStyle = styles.statusWaiting;
+        statusText = '대기중';
+        break;
+      case '약속중':
+        statusStyle = styles.statusInProgress;
+        statusText = '약속중';
+        break;
+      case '완료':
+        statusStyle = styles.statusCompleted;
+        statusText = '완료';
+        break;
+      default:
+        statusStyle = styles.statusDefault;
+        statusText = item.status;
+    }
+
+    return (
+      <View style={styles.itemContainer}>
+        <Image style={styles.itemImage} source={{ uri: 'https://via.placeholder.com/50' }} />
+        <View style={styles.itemTextContainer}>
+          <Text style={styles.itemName}>{item.name}</Text>
+        </View>
+        <View style={styles.itemStatusContainer}>
+          <Text style={[styles.itemStatus, statusStyle]}>
+            {statusText}
+          </Text>
+        </View>
       </View>
-      <View style={styles.itemStatusContainer}>
-        <Text style={[styles.itemStatus, item.status.includes('완료') && styles.itemStatusCompleted]}>
-          {item.status}
-        </Text>
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
-      {/* 상단 헤더
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
-          <Text>{'<'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>나의 판매 기록</Text>
-      </View> */}
-
       {/* 탭 메뉴 */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={[styles.tabButton, selectedTab === '물물교환' && styles.activeTab]}
-          onPress={() => setSelectedTab('물물교환')}
+          style={[styles.tabButton, selectedTab === '교환' && styles.activeTab]}
+          onPress={() => setSelectedTab('교환')}
         >
-          <Text style={[styles.tabText, selectedTab === '물물교환' && styles.activeTabText]}>물물교환</Text>
+          <Text style={[styles.tabText, selectedTab === '교환' && styles.activeTabText]}>교환</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, selectedTab === '나눔' && styles.activeTab]}
@@ -59,7 +103,7 @@ function Transaction(): JSX.Element {
 
       {/* 리스트 */}
       <FlatList
-        data={selectedTab === '물물교환' ? tradeItems : donationItems}
+        data={selectedTab === '교환' ? tradeItems : donationItems}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         style={styles.list}
@@ -144,14 +188,24 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: '#ccc',
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'black',
   },
-  itemStatusCompleted: {
-    backgroundColor: 'black',
+  statusWaiting: {
+    backgroundColor: '#FFA500',
     color: 'white',
+  },
+  statusInProgress: {
+    backgroundColor: '#4169E1',
+    color: 'white',
+  },
+  statusCompleted: {
+    backgroundColor: '#228B22',
+    color: 'white',
+  },
+  statusDefault: {
+    backgroundColor: '#ccc',
+    color: 'black',
   },
 });
 
