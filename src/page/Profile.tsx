@@ -13,6 +13,9 @@ interface ProfilePageProps {
 interface UserProfile {
   userId: number;
   name: string;
+  reputationScore: number;
+  pointEarned: number;
+  
 }
 
 function Profile({navigation}: ProfilePageProps): JSX.Element {
@@ -60,10 +63,6 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
     navigation.navigate('MyPoint');
   };
 
-  const reputation = () => {
-    navigation.navigate('Reputation');
-  };
-
   if (loading) {
     return <View style={styles.container}><Text>로딩 중...</Text></View>;
   }
@@ -81,7 +80,8 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
 
       {/* 프로필 섹션 */}
       <View style={styles.profileSection}>
-        <Text style={styles.profileName}>{userProfile?.name || '이름 없음'}</Text>
+        <Text style={styles.profileName}>이름: {userProfile?.name || '이름 없음'}</Text>
+        <Text style={styles.profileName}>Point: {userProfile?.pointEarned || '0'}</Text>
       </View>
 
       {/* 프로필 수정 버튼 */}
@@ -93,6 +93,11 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
         </CustomButton>
       </View>
 
+      {/* 평판 확인 */}
+      <View style={styles.reputationSection}>
+        <Text style={styles.profileName}>평판점수: {userProfile?.reputationScore || '0'}점</Text>
+      </View>
+
       {/* 메뉴 리스트 */}
       <View style={styles.menu}>
         <CustomButton style={styles.menuButtonContainer} onPress={Transaction}>
@@ -102,12 +107,7 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
         </CustomButton>
         <CustomButton style={styles.menuButtonContainer} onPress={myPoint}>
           <Typo color='black' fontSize={16} style={styles.menuText}>
-            내 포인트
-          </Typo>
-        </CustomButton>
-        <CustomButton style={styles.menuButtonContainer} onPress={reputation}>
-          <Typo color='black' fontSize={16} style={styles.menuText}>
-            받은 평가
+            포인트 사용 내역
           </Typo>
         </CustomButton>
       </View>
@@ -133,9 +133,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   profileSection: {
-    alignItems: 'center',
+    flexDirection: 'row',
     marginTop: 20,
     marginBottom: 10,
+    justifyContent: 'space-around',
   },
   profileImage: {
     width: 80,
@@ -150,6 +151,8 @@ const styles = StyleSheet.create({
   modify: {
     alignItems: 'center',
     marginBottom: 20,
+    borderBottomWidth: 1,
+    borderColor: 'gray',
   },
   modifyButtonContainer: {
     width: '90%',
@@ -160,6 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#eee',
     borderColor: 'gray',
+    marginBottom: 10,
   },
   modifyButtonText: {
     fontWeight: 'bold',
@@ -167,6 +171,7 @@ const styles = StyleSheet.create({
   menu: {
     width: '100%',
     paddingHorizontal: 20,
+    marginTop:10,
   },
   menuButtonContainer: {
     borderBottomWidth: 1,
@@ -181,6 +186,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  reputationSection: {
+    marginStart: 10,
   },
 });
 
