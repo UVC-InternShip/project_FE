@@ -1,8 +1,15 @@
-type TImage = {
+export type TImage = {
   image: File;
+  uri?: string;
+  filename?: string;
+  fileSize?: number;
+  height?: number;
+  width?: number;
+  type?: string;
 };
 
 export interface IFormData {
+  userId?: number;
   title: string;
   description: string;
   contentsType: string;
@@ -12,6 +19,7 @@ export interface IFormData {
 
 export interface IProduct {
   id: number;
+  userId: number;
   images: TImage[];
   title: string;
   description: string;
@@ -19,4 +27,13 @@ export interface IProduct {
   purpose: string;
   status: string;
   created_at: string;
+}
+
+export interface IUser {
+  userId: number;
+  phoneNumber: string;
+  eamil: string;
+  name: string;
+  reputationScore: number;
+  role: string;
 }

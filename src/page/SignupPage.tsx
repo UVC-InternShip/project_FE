@@ -5,6 +5,9 @@ import CustomButton from '../components/Button';
 import {NavigationProp} from '@react-navigation/native';
 import {useAtom} from 'jotai';
 import {isLoggedInAtom} from '../store/atom/auth';
+import axios from 'axios';
+import {API_URL} from '../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface SignupPageProps {
   navigation: NavigationProp<any>;
@@ -23,25 +26,78 @@ function SignupPage({
   const [nickname, setNickname] = useState('');
   // const setIsLogin = useSetAtom(isLoggedInAtom);
   const [isLogin, setIsLogin] = useAtom(isLoggedInAtom);
+
+  const baseUrl = API_URL;
   // const navigator = useNavigation();
-  const pressSendBtn = () => {
+
+  // 회원가입 버튼을 누르거나 인증코드 확인 시 이미 가입한 회원인 경우, asyncStorage에 로그인 여부 true로 저장.
+
+  const pressSendBtn = async () => {
     // 핸드폰 번호 인증 api 요청
-    console.log('인증번호 전송');
-    setIsSendClicked(true);
+    try {
+      await axios
+        .post(`${baseUrl}/sms/send-verification`, {
+          phoneNumber: phoneNumber,
+        })
+        .then(res => {
+          setIsSendClicked(true);
+        });
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+    }
   };
 
   useEffect(() => {
     setActivateBtn(phoneNumber.length >= 10);
   }, [phoneNumber]);
 
-  const checkAuthCode = () => {
-    console.log('인증번호 확인');
-    setIsCodeConfirmed(true);
+  const checkAuthCode = async () => {
+    try {
+      await axios
+        .post(`${baseUrl}/sms/verify-code`, {
+          phoneNumber: phoneNumber,
+          code: authCode,
+        })
+        .then(res => {
+          if (res.data.success === true) {
+            AsyncStorage.setItem('isLogin', 'true');
+            AsyncStorage.setItem('userinfo', JSON.stringify(res.data.user));
+            setIsLogin(true);
+            navigation.navigate('Main');
+          } else {
+            setIsCodeConfirmed(true);
+          }
+        });
+    } catch (error) {
+      console.error('Error verifying auth code:', error);
+    }
+    // setIsCodeConfirmed(true);
   };
 
-  const pressSingUp = () => {
-    console.log('회원가입');
-    setIsLogin(true);
+  const pressSingUp = async () => {
+    // try {
+    //   await axios.post('http://localhost:3000/api/sms/send-verification', {
+    //     phoneNumber: phoneNumber,
+    //   });
+    // } catch (error) {
+    //   console.error('Error sending SMS:', error);
+    // }
+    // console.log('회원가입');
+    // setIsLogin(true);
+    try {
+      await axios
+        .post(`${baseUrl}/users/register`, {
+          phoneNumber: phoneNumber,
+          name: nickname,
+        })
+        .then(res => {
+          AsyncStorage.setItem('isLogin', 'true');
+          setIsLogin(true);
+          navigation.navigate('Main');
+        });
+    } catch (error) {
+      console.error('Error registering user:', error);
+    }
   };
 
   useEffect(() => {
@@ -65,7 +121,7 @@ function SignupPage({
           placeholder="휴대폰 번호 (숫자만 입력)"
           value={phoneNumber}
           onChangeText={setPhoneNumber}
-          keyboardType="number-pad"
+          keyboardType="numeric"
         />
       </View>
 
@@ -84,7 +140,7 @@ function SignupPage({
             placeholder="인증 번호 입력"
             value={authCode}
             onChangeText={setAuthCode}
-            keyboardType="number-pad"
+            keyboardType="numeric"
           />
           <CustomButton onPress={checkAuthCode} style={styles.button}>
             <Typo color="black" fontSize={16}>

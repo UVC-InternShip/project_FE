@@ -6,6 +6,8 @@ import {useProductList} from '../store/query/useGetProductList';
 import {NavigationProp} from '@react-navigation/native';
 import ProductCard from '../components/ProductCard';
 import {dummyData} from '../assets/dummy';
+import axios from 'axios';
+import {API_URL} from '../../config';
 
 interface HomeProps {
   navigation: NavigationProp<any>;
@@ -14,8 +16,22 @@ interface HomeProps {
 function Home({navigation}: HomeProps): JSX.Element {
   const [showButton, setShowButton] = useState(false);
   const {isLoading, data: products} = useProductList();
+  const [productList, setProductList] = useState<any[]>([]);
   // const navigation = useNavigation();
-
+  const baseUrl = API_URL;
+  useEffect(() => {
+    const getList = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/contents/listAll`);
+        setProductList(response.data.result);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    getList();
+  }, []);
+  console.log('productList', productList);
+  // console.log('productIMg', productList[0].images.imageUrl);
   // const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // const fadeIn = () => {
@@ -113,6 +129,7 @@ function Home({navigation}: HomeProps): JSX.Element {
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
           <ProductCard
+            // imageUrl={item.images[0].imageUrl}
             imageUrl={item.images[0]}
             title={item.title}
             description={item.description}

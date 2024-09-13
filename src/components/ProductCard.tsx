@@ -8,10 +8,10 @@ interface ProductCardProps {
   imageUrl: string;
   title: string;
   description?: string;
-  content_type: string;
-  purpose: string;
-  status: string;
-  created_at: string;
+  content_type?: string;
+  purpose?: string;
+  status?: string;
+  created_at?: string;
   onPress?: () => void;
 }
 function ProductCard({

@@ -27,15 +27,23 @@ import SigninPage from './src/page/SigninPage';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ProductRegisterPage from './src/page/ProductRegisterPage';
 import ProductDetailPage from './src/page/ProductDetail';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 export default function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [isLogin, setIsLogin] = useAtom(isLoggedInAtom);
+
   const [isNavigatorReady, setIsNavigatorReady] = useState(false);
   const navigatorRef = useRef(null);
   const queryClient = new QueryClient();
+
+  const getLoginStatus = async () => {
+    const res = await AsyncStorage.getItem('isLogin');
+    setIsLogin(res === 'true');
+  };
+
   useEffect(() => {
     // SplashScreen.show();
     setTimeout(() => {
@@ -109,11 +117,11 @@ export default function App(): JSX.Element {
               <SignupPage {...props} isNavigatorReady={isNavigatorReady} />
             )}
           </Stack.Screen>
-          <Stack.Screen name="Signin">
+          {/* <Stack.Screen name="Signin">
             {props => (
               <SigninPage {...props} isNavigatorReady={isNavigatorReady} />
             )}
-          </Stack.Screen>
+          </Stack.Screen> */}
           <Stack.Screen name="Search" component={SearchPage} />
           <Stack.Screen
             name="ProductRegister"
@@ -122,25 +130,24 @@ export default function App(): JSX.Element {
           <Stack.Screen
             name="modifyUserInfo"
             component={modifyUserInfo}
-            options={{ title: '프로필 수정'}}
+            options={{title: '프로필 수정'}}
           />
           <Stack.Screen
             name="Transaction"
             component={Transaction}
-            options={{ title: '나의 활동'}}
+            options={{title: '나의 활동'}}
           />
           <Stack.Screen
             name="MyPoint"
             component={MyPoint}
-            options={{ title: '내 포인트'}}
+            options={{title: '내 포인트'}}
           />
           <Stack.Screen
             name="Reputation"
             component={Reputation}
-            options={{ title: '받은 평가'}}
+            options={{title: '받은 평가'}}
           />
           <Stack.Screen name="ProductDetail" component={ProductDetailPage} />
-
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>

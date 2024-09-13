@@ -1,4 +1,4 @@
-import {useRoute} from '@react-navigation/native';
+import {NavigationProp, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {dummyData} from '../assets/dummy';
 import {IProduct} from '../interface/interface';
@@ -12,17 +12,23 @@ import {
   View,
 } from 'react-native';
 import CustomButton from '../components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProductCard from '../components/ProductCard';
 
-function ProductDetailPage(): JSX.Element {
+interface ProductDetailPageProps {
+  navigation: NavigationProp<any>;
+}
+function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const route = useRoute();
   const {productId} = route.params as {productId: number};
   const [productInfo, setProductInfo] = useState<IProduct | undefined>(
     undefined,
   );
 
-  const [activeTab, setActiveTab] = useState('상품 정보');
+  const [activeTab, setActiveTab] = useState<string>('상품 정보');
   const [suggestion, setSuggestion] = useState<IProduct[]>([]);
-
+  const [userinfo, setUserInfo] = useState<any>(null);
+  const productRegisterUserId = productInfo?.userId;
   // 상품 상제 정보 API 호출
   // 우선은 dummy data로 대체
   useEffect(() => {
@@ -33,6 +39,17 @@ function ProductDetailPage(): JSX.Element {
     getProductInfo();
   }, [productId]);
   console.log('productInfo', productInfo);
+
+  useEffect(() => {
+    const getUserinfo = async () => {
+      const userinfos = await AsyncStorage.getItem('userinfo');
+      setUserInfo(JSON.parse(userinfos!));
+    };
+    getUserinfo();
+  }, []);
+  console.log('userInfo', userinfo);
+  const userId = userinfo?.userId;
+  console.log('유저아이디', userId);
 
   const renderImages = ({item}) => (
     <Image source={item} style={styles.carouselImage} />
@@ -56,12 +73,18 @@ function ProductDetailPage(): JSX.Element {
     console.log('like');
   };
 
+  const handleProductPress = (id: number) => {
+    navigation.navigate('ProductDetail', {productId: id});
+  };
   // const renderSuggestionList = ({product}) => {
 
   // }
 
   const pressSuggest = () => {
-    console.log('제안');
+    navigation.navigate('ProductRegister', {
+      type: 'trade',
+      productId: productId,
+    });
   };
   return (
     <View style={styles.container}>
@@ -104,18 +127,38 @@ function ProductDetailPage(): JSX.Element {
       )}
       {activeTab === '제안 목록' && (
         <View style={styles.tabContent}>
-          <Typo>제안 목록 내용</Typo>
+          <FlatList
+            data={dummyData}
+            horizontal
+            keyExtractor={item => item.id.toString()}
+            renderItem={({item}) => (
+              <ProductCard
+                // imageUrl={item.images[0].imageUrl}
+                imageUrl={item.images[0]}
+                title={item.title}
+                description={item.description}
+                content_type={item.content_type}
+                purpose={item.purpose}
+                status={item.status}
+                // created_at={item.created_at}
+                // onPress={() => handleProductPress(item.id)}
+              />
+            )}
+            contentContainerStyle={styles.listContainer}
+          />
         </View>
       )}
 
       {/* 버튼 */}
       <View style={styles.buttonContainer}>
-        <CustomButton style={styles.button} onPress={pressLike}>
+        {/* <CustomButton style={styles.button} onPress={pressLike}>
           <Typo>좋아요</Typo>
-        </CustomButton>
-        <CustomButton style={styles.button} onPress={pressSuggest}>
-          <Typo>제안하기</Typo>
-        </CustomButton>
+        </CustomButton> */}
+        {userId !== productRegisterUserId && (
+          <CustomButton style={styles.button} onPress={pressSuggest}>
+            <Typo>제안하기</Typo>
+          </CustomButton>
+        )}
       </View>
     </View>
   );
@@ -158,6 +201,11 @@ const styles = StyleSheet.create({
   },
   button: {
     // 버튼 스타일 설정
+  },
+  listContainer: {
+    paddingHorizontal: 16,
+    gap: 16,
+    paddingTop: 16,
   },
 });
 

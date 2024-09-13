@@ -10,6 +10,7 @@
 export const dummyData = [
   {
     id: 1,
+    userId: 1,
     images: [require('../assets/bed.jpg')],
     title: 'Product 1',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -20,6 +21,7 @@ export const dummyData = [
   },
   {
     id: 2,
+    userId: 2,
     images: [
       require('../assets/bed.jpg'),
       require('../assets/macbook.jpg'),
@@ -34,6 +36,7 @@ export const dummyData = [
   },
   {
     id: 3,
+    userId: 2,
     images: [
       require('../assets/bed.jpg'),
       require('../assets/macbook.jpg'),
@@ -49,6 +52,7 @@ export const dummyData = [
   },
   {
     id: 4,
+    userId: 2,
     images: [
       require('../assets/bed.jpg'),
       require('../assets/macbook.jpg'),
@@ -64,6 +68,7 @@ export const dummyData = [
   },
   {
     id: 5,
+    userId: 2,
     images: [
       require('../assets/bed.jpg'),
       require('../assets/macbook.jpg'),

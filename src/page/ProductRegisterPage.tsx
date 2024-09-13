@@ -1,5 +1,5 @@
 // import {useRoute} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   ImageURISource,
@@ -20,28 +20,42 @@ import {
 } from 'react-native-image-picker';
 import CustomButton from '../components/Button';
 import LocalImage from '../components/LocalImage';
-import {IFormData} from '../interface/interface';
+import {TImage} from '../interface/interface';
+import {API_URL} from '../../config';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NavigationProp} from '@react-navigation/native';
 
 const MAX_IMAGE_COUNT = 5;
 
-function ProductRegisterPage(): JSX.Element {
+interface ProductRegisterPageProps {
+  navigation: NavigationProp<any>;
+}
+
+function ProductRegisterPage({
+  navigation,
+}: ProductRegisterPageProps): JSX.Element {
   // const route = useRoute();
   // const {type} = route.params as {type: string};
-  // type은 '물물교환' 또는 '나눔' 중 하나이다.
-  // const [tradeType, setTradeType] = useState<string>('물물교환');
-  // const [title, setTitle] = useState<string>('');
-  // const [description, setDescription] = useState<string>('');
-  // const [image, setImage] = useState<ImageURISource[]>([]);
-  const [formData, setFormData] = useState<IFormData>({
-    title: '',
-    description: '',
-    contentsType: '상품',
-    purpose: '물물교환',
-    images: [],
-  });
-  console.log('formData', formData);
+  // type은 '교환' 또는 '나눔' 중 하나이다.
+  const [tradeType, setTradeType] = useState<string>('교환');
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [userinfo, setUserInfo] = useState<any>(null);
+  const [image, setImage] = useState<TImage[]>([]);
+
+  useEffect(() => {
+    const getUserinfo = async () => {
+      const userinfos = await AsyncStorage.getItem('userinfo');
+      setUserInfo(JSON.parse(userinfos!));
+    };
+    getUserinfo();
+  }, []);
+  console.log('userInfo', userinfo);
+  const baseUrl = API_URL;
+
   const pressShotCamera = () => {
-    if (formData.images.length >= MAX_IMAGE_COUNT) {
+    if (image.length >= MAX_IMAGE_COUNT) {
       Alert.alert('사진은 5개까지만 등록할 수 있습니다.');
       return;
     }
@@ -60,18 +74,17 @@ function ProductRegisterPage(): JSX.Element {
         Alert.alert('Error : ' + response.errorMessage);
       } else {
         if (response.assets !== null) {
-          const uri = response.assets[0].uri;
-          setFormData({...formData, images: [...formData.images, {uri}]});
+          setImage(response.assets);
         }
       }
     });
   };
-  // console.log('image', image);
+  console.log('image', image);
 
   const pressSelectImage = async () => {
     const options: ImageLibraryOptions = {
       mediaType: 'photo',
-      selectionLimit: MAX_IMAGE_COUNT - formData.images.length,
+      selectionLimit: MAX_IMAGE_COUNT - image.length,
     };
 
     const response = await launchImageLibrary(options);
@@ -81,31 +94,56 @@ function ProductRegisterPage(): JSX.Element {
     } else if (response.errorMessage) {
       Alert.alert('Error :' + response.errorMessage);
     } else {
-      // const uris: Asset[] = [];
-      // response.assets?.forEach(value => uris.push(value.uri));
-      // setImage(uris);
-      const newImages = response.assets?.map(asset => ({uri: asset.uri}));
-      setFormData({...formData, images: [...formData.images, ...newImages]});
+      setImage(response.assets);
     }
   };
 
   const handleDeleteImage = (index: number) => {
-    // setImage(image.filter((_, i) => i !== index));
-    setFormData({
-      ...formData,
-      images: formData.images.filter((_, i) => i !== index),
+    setImage(image.filter((_, i) => i !== index)); // image 상태 업데이트
+  };
+
+  const pressRegisterProduct = async () => {
+    const formData = new FormData();
+
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('contentsType', '상품');
+    formData.append('purpose', tradeType);
+    formData.append('userId', userinfo?.userId.toString());
+    formData.append('categoryId', '1');
+    formData.append('status', '대기중'); // categoryId: 1 (default)
+
+    image.forEach((img, index) => {
+      formData.append('images', {
+        uri: img.uri,
+        name: `img${index}.jpg`,
+        type: img.type,
+      });
     });
+    console.log('폼데이터:', formData);
+    try {
+      await axios.post(`${baseUrl}/contents/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      Alert.alert('등록 성공');
+      navigation.goBack(); // back to previous screen
+    } catch (err) {
+      console.error('Error registering product:', err);
+      Alert.alert('상품등록실패');
+    }
   };
 
-  const pressRegisterProduct = () => {
-    console.log('상품 등록');
-  };
-
-  const toggleTradeType = (type: string) => {
+  const toggleTradeType = (n: number) => {
     // setTradeType(type);
-    setFormData({...formData, purpose: type});
+    if (n === 1) {
+      setTradeType('교환');
+    } else if (n === 2) {
+      setTradeType('나눔');
+    }
   };
-  // 물물교환과 나눔 버튼은 둘 중 하나만 선택되어야 한다.
+  // 교환과 나눔 버튼은 둘 중 하나만 선택되어야 한다.
   // 즉, 각 버튼의 스타일은 조건부 렌더링으로 되어야 한다.
 
   return (
@@ -135,7 +173,7 @@ function ProductRegisterPage(): JSX.Element {
           />
         </View>
         <ScrollView horizontal style={styles.ImageCon}>
-          {formData.images.map((img, index) => (
+          {image.map((img, index) => (
             <View key={index} style={styles.imageWrapper}>
               <LocalImage localAsset={img} width={100} height={100} />
               <Icon.Button
@@ -156,8 +194,8 @@ function ProductRegisterPage(): JSX.Element {
         </Typo>
         <TextInput
           style={styles.input}
-          onChangeText={text => setFormData({...formData, title: text})}
-          value={formData.title}
+          onChangeText={setTitle}
+          value={title}
           placeholder="상품 이름을 등록해주세요."
         />
       </View>
@@ -168,19 +206,17 @@ function ProductRegisterPage(): JSX.Element {
         <View style={styles.btnGroup}>
           <CustomButton
             style={styles.tradeButton}
-            onPress={() => toggleTradeType('물물교환')}
-            selected={formData.purpose === '물물교환'}>
-            <Typo color={formData.purpose === '물물교환' ? 'white' : 'black'}>
+            onPress={() => toggleTradeType(1)}
+            selected={tradeType === '교환'}>
+            <Typo color={tradeType === '교환' ? 'white' : 'black'}>
               물물교환
             </Typo>
           </CustomButton>
           <CustomButton
             style={styles.tradeButton}
-            onPress={() => toggleTradeType('나눔')}
-            selected={formData.purpose === '나눔'}>
-            <Typo color={formData.purpose === '나눔' ? 'white' : 'black'}>
-              나눔
-            </Typo>
+            onPress={() => toggleTradeType(2)}
+            selected={tradeType === '나눔'}>
+            <Typo color={tradeType === '나눔' ? 'white' : 'black'}>나눔</Typo>
           </CustomButton>
         </View>
       </View>
@@ -192,8 +228,8 @@ function ProductRegisterPage(): JSX.Element {
           multiline
           placeholder="상품에 대한 상세한 설명을 입력해주세요."
           style={styles.descInput}
-          onChangeText={text => setFormData({...formData, description: text})}
-          value={formData.description}
+          onChangeText={setDescription}
+          value={description}
         />
       </View>
       <CustomButton
