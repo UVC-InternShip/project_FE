@@ -7,6 +7,9 @@ export type TImage = {
   height?: number;
   width?: number;
   type?: string;
+  proposalUserId?: number;
+  offererUserId?: number;
+  proposerContentId?: number;
 };
 
 export interface IFormData {
@@ -16,12 +19,6 @@ export interface IFormData {
   contentsType: string;
   purpose: string;
   images: TImage[];
-}
-
-export interface IFormData2 extends IFormData {
-  proposalUserId: number;
-  offererUserId: number;
-  proposerContentId: number;
 }
 
 export interface IProduct {
