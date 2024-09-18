@@ -75,15 +75,6 @@ function SignupPage({
   };
 
   const pressSingUp = async () => {
-    // try {
-    //   await axios.post('http://localhost:3000/api/sms/send-verification', {
-    //     phoneNumber: phoneNumber,
-    //   });
-    // } catch (error) {
-    //   console.error('Error sending SMS:', error);
-    // }
-    // console.log('회원가입');
-    // setIsLogin(true);
     try {
       await axios
         .post(`${baseUrl}/users/register`, {

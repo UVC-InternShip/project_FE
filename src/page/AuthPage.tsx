@@ -15,10 +15,6 @@ function AuthPage({navigation}: AuthPageProps): JSX.Element {
     navigation.navigate('Signup');
   };
 
-  // const pressLoginBtn = () => {
-  //   console.log('Login');
-  //   navigation.navigate('Signin');
-  // };
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
@@ -40,14 +36,6 @@ function AuthPage({navigation}: AuthPageProps): JSX.Element {
             본인인증하기
           </Typo>
         </CustomButton>
-        {/* <Typo color="black" fontSize={16} style={styles.text}>
-          이미 회원이신가요?
-          <CustomButton onPress={pressLoginBtn}>
-            <Typo color="blue" fontSize={16}>
-              로그인
-            </Typo>
-          </CustomButton>
-        </Typo> */}
       </View>
     </View>
   );

@@ -20,8 +20,6 @@ import {
 import CustomButton from '../components/Button';
 import LocalImage from '../components/LocalImage';
 import {TImage} from '../interface/interface';
-import {API_URL} from '../../config';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp, useRoute} from '@react-navigation/native';
 import {
@@ -63,8 +61,6 @@ function ProductRegisterPage({
       setTradeType('교환');
     }
   }, [type]);
-
-  const baseUrl = API_URL;
 
   const pressShotCamera = () => {
     if (image.length >= MAX_IMAGE_COUNT) {

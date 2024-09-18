@@ -9,6 +9,10 @@ function Chat(): JSX.Element {
   );
 }
 
+// TODO
+// [ ]socket.io 로 채팅 구현
+// [ ] 채팅 UI 구현
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

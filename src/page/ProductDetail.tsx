@@ -26,11 +26,13 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   );
 
   const [activeTab, setActiveTab] = useState<string>('상품 정보');
+  // TODO
+  // [ ] 제안목록 useQuery로 받아오기
   const [suggestion, setSuggestion] = useState<IProduct[]>([]);
   const [userinfo, setUserInfo] = useState<any>(null);
   const productRegisterUserId = productInfo?.userId;
-  // 상품 상제 정보 API 호출
-  // 우선은 dummy data로 대체
+
+  // NOTE: 상품 조회 API 존재하지 않음. 백엔드 문의.
   useEffect(() => {
     const getProductInfo = async () => {
       const response = dummyData.filter(item => item.id === productId);
@@ -54,31 +56,11 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const renderImages = ({item}) => (
     <Image source={item} style={styles.carouselImage} />
   );
-  // useEffect(() => {
-  //   const getProductInfo = async () => {
-  //       // API 요청
-  //       // const response = await axios.get('상��� 상세 API URL', {
-  //       //   headers: {
-  //       //     Authorization: 'Bearer token',
-  //       //   },
-  //       // });
-  //       // console.log('productInfo', response.data);
-  //       // 하지만, 현재 api 가 없기 때문에, 우선은 dummy data로 대체
-  //       const response = dummyData.filter((item) => item.id === productId);
-  //       setProductInfo(response);
-  //   }
-  //   getProductInfo();
-  // })
-  const pressLike = () => {
-    console.log('like');
-  };
-
+  // CHECK 제안리스트의 상품 클릭 시 해당 상품 상세 페이지로 이동.
   const handleProductPress = (id: number) => {
     navigation.navigate('ProductDetail', {productId: id});
   };
-  // const renderSuggestionList = ({product}) => {
 
-  // }
 
   const pressSuggest = () => {
     navigation.navigate('ProductRegister', {
