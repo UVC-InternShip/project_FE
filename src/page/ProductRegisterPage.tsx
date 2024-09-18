@@ -24,6 +24,10 @@ import {API_URL} from '../../config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp, useRoute} from '@react-navigation/native';
+import {
+  useOfferProduct,
+  useRegisterProduct,
+} from '../store/mutation/useRegisterProduct';
 
 const MAX_IMAGE_COUNT = 5;
 
@@ -114,6 +118,9 @@ function ProductRegisterPage({
     setImage(image.filter((_, i) => i !== index)); // image 상태 업데이트
   };
 
+  const {mutate: registerProduct} = useRegisterProduct();
+  const {mutate: offerProduct} = useOfferProduct();
+
   const pressRegisterProduct = async () => {
     const formData = new FormData();
 
@@ -134,15 +141,18 @@ function ProductRegisterPage({
     });
     console.log('폼데이터:', formData);
     try {
-      await axios.post(`${baseUrl}/contents/register`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      Alert.alert('등록 성공');
-      navigation.goBack(); // back to previous screen
-    } catch (err) {
-      console.error('Error registering product:', err);
+      if (offer) {
+        // formData.append('proposalUserId', userinfo?.userId.toString());
+        // formData.append('offererUserId', offer);
+        // formData.append('proposerContentId', offer); // offererUserId or proposalUserId
+        offerProduct(formData);
+        navigation.goBack();
+      } else {
+        registerProduct(formData);
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error('Error registering product:', error);
       Alert.alert('상품등록실패');
     }
   };

@@ -3,7 +3,7 @@ import {API_URL} from '../../../config';
 import {IFormData, IFormData2} from '../../interface/interface';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 
-const registerProduct = async (product: IFormData) => {
+const registerProduct = async (product: FormData) => {
   const response = await axios.post(`${API_URL}/contents/register`, product, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -12,7 +12,7 @@ const registerProduct = async (product: IFormData) => {
   return response.data;
 };
 
-const offerProduct = async (product: IFormData2) => {
+const offerProduct = async (product: FormData) => {
   const response = await axios.post(`${API_URL}/offer/register`, product, {
     headers: {
       'Content-Type': 'multipart/form-data',
