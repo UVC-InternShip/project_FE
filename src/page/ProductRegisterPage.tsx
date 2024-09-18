@@ -2,7 +2,6 @@
 import React, {useEffect, useState} from 'react';
 import {
   Alert,
-  ImageURISource,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -24,7 +23,7 @@ import {TImage} from '../interface/interface';
 import {API_URL} from '../../config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NavigationProp} from '@react-navigation/native';
+import {NavigationProp, useRoute} from '@react-navigation/native';
 
 const MAX_IMAGE_COUNT = 5;
 
@@ -35,8 +34,9 @@ interface ProductRegisterPageProps {
 function ProductRegisterPage({
   navigation,
 }: ProductRegisterPageProps): JSX.Element {
-  // const route = useRoute();
-  // const {type} = route.params as {type: string};
+  const route = useRoute();
+  const {type} = route.params as {type: string};
+  const {offer} = route.params as {offer: string};
   // type은 '교환' 또는 '나눔' 중 하나이다.
   const [tradeType, setTradeType] = useState<string>('교환');
   const [title, setTitle] = useState<string>('');
@@ -51,7 +51,15 @@ function ProductRegisterPage({
     };
     getUserinfo();
   }, []);
-  console.log('userInfo', userinfo);
+
+  useEffect(() => {
+    if (type === '나눔') {
+      setTradeType('나눔');
+    } else {
+      setTradeType('교환');
+    }
+  }, [type]);
+
   const baseUrl = API_URL;
 
   const pressShotCamera = () => {
@@ -71,10 +79,12 @@ function ProductRegisterPage({
       if (response.didCancel) {
         Alert.alert('촬영이 취소되었습니다.');
       } else if (response.errorMessage) {
-        Alert.alert('Error : ' + response.errorMessage);
+        Alert.alert(response.errorMessage);
       } else {
-        if (response.assets !== null) {
-          setImage(response.assets);
+        if (response.assets) {
+          // console.log('카메라촬영', response.assets);
+          const img = response.assets as TImage[];
+          setImage(img);
         }
       }
     });
@@ -88,13 +98,15 @@ function ProductRegisterPage({
     };
 
     const response = await launchImageLibrary(options);
-
+    console.log(response);
     if (response.didCancel) {
       Alert.alert('취소되었습니다.');
     } else if (response.errorMessage) {
       Alert.alert('Error :' + response.errorMessage);
     } else {
-      setImage(response.assets);
+      console.log('이미지선택', response.assets);
+      const img = response.assets as TImage[];
+      setImage(img);
     }
   };
 
