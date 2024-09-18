@@ -6,7 +6,7 @@
  */
 
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigator from './src/router/TabNav';
 import {Text, View} from 'react-native';
@@ -23,7 +23,6 @@ import {isLoggedInAtom} from './src/store/atom/auth';
 import SplashScreenPage from './src/page/SplashScreen';
 import AuthPage from './src/page/AuthPage';
 import SignupPage from './src/page/SignupPage';
-import SigninPage from './src/page/SigninPage';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ProductRegisterPage from './src/page/ProductRegisterPage';
 import ProductDetailPage from './src/page/ProductDetail';
@@ -39,33 +38,31 @@ export default function App(): JSX.Element {
   const navigatorRef = useRef(null);
   const queryClient = new QueryClient();
 
-  const getLoginStatus = async () => {
+  const getLoginStatus = useCallback(async () => {
     const res = await AsyncStorage.getItem('isLogin');
+    console.log('res', res);
     setIsLogin(res === 'true');
-  };
+  }, [setIsLogin]);
 
   useEffect(() => {
-    // SplashScreen.show();
     setTimeout(() => {
-      // SplashScreen.hide();
       setIsLoading(false);
       SplashScreen.hide();
     }, 2000);
-    // 로그인 여부 확인
-    // const checkLogin = async () => {
-    //   try {
-    //     const token = await AsyncStorage.getItem('userToken');
-    //     setIsLogin(!!token);
-    //   } catch (error) {
-    //     // 로그인 실��
-    //     setIsLoading(false);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-
-    // checkLogin();
   }, []);
+
+  useEffect(() => {
+    getLoginStatus();
+  }, [getLoginStatus]);
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('isLogin');
+      setIsLogin(false);
+    } catch (error) {
+      console.error('Error removing login status:', error);
+    }
+  };
 
   if (isLoading) {
     return <SplashScreenPage />;
@@ -99,6 +96,12 @@ export default function App(): JSX.Element {
                         backgroundColor={'#fff'}
                         color={'#000'}
                       />
+                      <Icon.Button
+                        onPress={logout}
+                        name="log-out-outline"
+                        backgroundColor={'#fff'}
+                        color={'#000'}
+                      />
                     </View>
                   ),
                 }}
@@ -111,17 +114,11 @@ export default function App(): JSX.Element {
               options={{headerShown: false}}
             />
           )}
-          {/* signuppage & loginpage */}
           <Stack.Screen name="Signup">
             {props => (
               <SignupPage {...props} isNavigatorReady={isNavigatorReady} />
             )}
           </Stack.Screen>
-          {/* <Stack.Screen name="Signin">
-            {props => (
-              <SigninPage {...props} isNavigatorReady={isNavigatorReady} />
-            )}
-          </Stack.Screen> */}
           <Stack.Screen name="Search" component={SearchPage} />
           <Stack.Screen
             name="ProductRegister"
