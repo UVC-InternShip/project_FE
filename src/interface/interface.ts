@@ -1,6 +1,7 @@
 export type TImage = {
   image: File;
   uri?: string;
+  originalPath?: string;
   filename?: string;
   fileSize?: number;
   height?: number;
@@ -15,6 +16,12 @@ export interface IFormData {
   contentsType: string;
   purpose: string;
   images: TImage[];
+}
+
+export interface IFormData2 extends IFormData {
+  proposalUserId: number;
+  offererUserId: number;
+  proposerContentId: number;
 }
 
 export interface IProduct {
