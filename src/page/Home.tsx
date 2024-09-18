@@ -17,69 +17,7 @@ function Home({navigation}: HomeProps): JSX.Element {
   const [showButton, setShowButton] = useState(false);
   const {isLoading, data: products} = useProductList();
   const [productList, setProductList] = useState<any[]>([]);
-  // const navigation = useNavigation();
-  const baseUrl = API_URL;
-  useEffect(() => {
-    const getList = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/contents/listAll`);
-        setProductList(response.data.result);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-    getList();
-  }, []);
-  console.log('productList', productList);
-  // console.log('productIMg', productList[0].images.imageUrl);
-  // const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // const fadeIn = () => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 1,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // };
-  // const fadeOut = () => {
-  //   // Will change fadeAnim value to 0 in 3 seconds
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 0,
-  //     duration: 3000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // };
-
-  // useEffect(() => {
-  //   if (showButton) {
-  //     fadeIn();
-  //   } else {
-  //     fadeOut();
-  //   }
-  // }, [showButton]);
-  // const fadeIn = useCallback(() => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 1,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // }, [fadeAnim]);
-
-  // const fadeOut = useCallback(() => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 0,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // }, [fadeAnim]);
-
-  // useEffect(() => {
-  //   if (showButton) {
-  //     fadeIn();
-  //   } else {
-  //     fadeOut();
-  //   }
-  // }, [showButton, fadeIn, fadeOut]);
+  console.log('products', products);
 
   // const pressBarterBtn = () => {
   //   navigation.navigate('ProductRegister', {type: 'barter'});
@@ -93,15 +31,6 @@ function Home({navigation}: HomeProps): JSX.Element {
     navigation.navigate('ProductRegister', {type: 'trade'});
   };
 
-  // const pressBtn = () => {
-  //   setShowButton(!showButton);
-  //   if (showButton) {
-  //     fadeOut();
-  //   } else {
-  //     fadeIn();
-  //   }
-  // };
-
   const handleProductPress = (id: number) => {
     navigation.navigate('ProductDetail', {productId: id});
   };
@@ -110,23 +39,9 @@ function Home({navigation}: HomeProps): JSX.Element {
       <CustomButton style={styles.buttonContainer} onPress={pressRegisterBtn}>
         <Typo color="black">물건 등록</Typo>
       </CustomButton>
-
-      {/* {showButton && (
-        <Animated.View
-          style={[styles.additionalButtonsContainer, {opacity: fadeAnim}]}>
-          <CustomButton
-            style={styles.additionalButton}
-            onPress={pressBarterBtn}>
-            <Typo color="black">물물교환</Typo>
-          </CustomButton>
-          <CustomButton style={styles.additionalButton} onPress={pressShareBtn}>
-            <Typo color="black">나눔</Typo>
-          </CustomButton>
-        </Animated.View>
-      )} */}
       <FlatList
-        data={dummyData}
-        keyExtractor={item => item.id.toString()}
+        data={products}
+        keyExtractor={item => item.userId.toString()}
         renderItem={({item}) => (
           <ProductCard
             // imageUrl={item.images[0].imageUrl}
