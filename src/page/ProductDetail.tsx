@@ -82,7 +82,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
 
   const pressSuggest = () => {
     navigation.navigate('ProductRegister', {
-      type: 'trade',
+      offer: true,
       productId: productId,
     });
   };
