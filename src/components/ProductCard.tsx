@@ -25,9 +25,7 @@ function ProductCard({
 }: ProductCardProps): JSX.Element {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      {/* Product Card UI */}
-      {/* Add product data here */}
-      <LocalImage localAsset={imageUrl} width={100} height={100} />
+      <RemoteImage imageUrl={imageUrl} style={styles.productImageContainer} />
       <View style={styles.productDescContainer}>
         <Typo color="black" fontSize={24}>
           {title}
@@ -60,6 +58,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     padding: 16,
     gap: 8,
+  },
+  productImageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
   },
 });
 

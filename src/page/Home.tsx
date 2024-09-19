@@ -20,7 +20,7 @@ function Home({navigation}: HomeProps): JSX.Element {
   // [ ] isLoading 시 보여줄 프로그레스 구현.
   // [ ] 물물교환과 나눔 상품 필터링 구현.
   // const [productList, setProductList] = useState<any[]>([]);
-  console.log('products', products);
+  // console.log('products', products.map(el => el.images));
 
   // const pressBarterBtn = () => {
   //   navigation.navigate('ProductRegister', {type: 'barter'});
@@ -44,18 +44,18 @@ function Home({navigation}: HomeProps): JSX.Element {
       </CustomButton>
       <FlatList
         data={products}
-        keyExtractor={item => item.userId.toString()}
+        keyExtractor={item => item.contentsId}
         renderItem={({item}) => (
           <ProductCard
             // imageUrl={item.images[0].imageUrl}
-            imageUrl={item.images[0]}
+            imageUrl={item.images[0].imageUrl}
             title={item.title}
             description={item.description}
             content_type={item.content_type}
             purpose={item.purpose}
             status={item.status}
             created_at={item.created_at}
-            onPress={() => handleProductPress(item.id)}
+            onPress={() => handleProductPress(item.contentsId)}
           />
         )}
         contentContainerStyle={styles.listContainer}

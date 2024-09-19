@@ -7,10 +7,14 @@ export type TImage = {
   height?: number;
   width?: number;
   type?: string;
-  proposalUserId?: number;
-  offererUserId?: number;
-  proposerContentId?: number;
+  imageUrl?: string;
+  order?: number
 };
+
+export interface IS3Image {
+  imageUrl?: string;
+  order?: number
+}
 
 export interface IFormData {
   userId?: number;
@@ -19,6 +23,9 @@ export interface IFormData {
   contentsType: string;
   purpose: string;
   images: TImage[];
+  proposalUserId?: number;
+  offererUserId?: number;
+  proposerContentId?: number;
 }
 
 export interface IProduct {

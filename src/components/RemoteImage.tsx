@@ -1,18 +1,24 @@
 import React from 'react';
 
-import {Image} from 'react-native';
+import {Image, ImageProps} from 'react-native';
 
-interface RemoteImageProps {
+// interface RemoteImageProps {
+//   imageUrl: string;
+//   width?: number;
+//   height?: number;
+//   // style을 설정할 수 있도록.
+//   style: 
+// }
+
+interface RemoteImageProps extends ImageProps {
   imageUrl: string;
-  width?: number;
-  height?: number;
 }
 
-function RemoteImage({imageUrl, width, height}: RemoteImageProps): JSX.Element {
+function RemoteImage({imageUrl, style}: RemoteImageProps): JSX.Element {
   return (
     <Image
       source={{uri: imageUrl}}
-      style={{width: width, height: height}}
+      style={style}
       resizeMode="cover"
     />
   );

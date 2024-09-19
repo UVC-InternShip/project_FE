@@ -1,12 +1,13 @@
 import {NavigationProp, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {dummyData} from '../assets/dummy';
-import {IProduct} from '../interface/interface';
+import {IS3Image} from '../interface/interface';
 import Typo from '../components/Typo';
 import {
   Dimensions,
   FlatList,
   Image,
+  ListRenderItemInfo,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -14,6 +15,9 @@ import {
 import CustomButton from '../components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductCard from '../components/ProductCard';
+import { useProductInfo } from '../store/query/useGetProductInfo';
+// import RemoteImage from '../components/RemoteImage';
+import CustomFlatList from '../components/CustomFlatList';
 
 interface ProductDetailPageProps {
   navigation: NavigationProp<any>;
@@ -21,26 +25,27 @@ interface ProductDetailPageProps {
 function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const route = useRoute();
   const {productId} = route.params as {productId: number};
-  const [productInfo, setProductInfo] = useState<IProduct | undefined>(
-    undefined,
-  );
+  console.log('productId', typeof productId);
+  const {isLoading, data: productInfo} = useProductInfo(productId);
+  console.log('로딩상태',isLoading)
+  console.log('productInfo', productInfo);
+  console.log('productId', productId);
+  // const [productInfo, setProductInfo] = useState<IProduct | undefined>(
+  //   undefined,
+  // );
+  // console.log(productInfo.images[0])
+  console.log('productInfo 타입', typeof productInfo);
 
   const [activeTab, setActiveTab] = useState<string>('상품 정보');
   // TODO
   // [ ] 제안목록 useQuery로 받아오기
-  const [suggestion, setSuggestion] = useState<IProduct[]>([]);
+  // const [suggestion, setSuggestion] = useState<IProduct[]>([]);
   const [userinfo, setUserInfo] = useState<any>(null);
   const productRegisterUserId = productInfo?.userId;
-
+  const [imgUrls, setImgUrls] = useState<{imageUrl: string}[]>([]);
   // NOTE: 상품 조회 API 존재하지 않음. 백엔드 문의.
-  useEffect(() => {
-    const getProductInfo = async () => {
-      const response = dummyData.filter(item => item.id === productId);
-      setProductInfo(response[0]);
-    };
-    getProductInfo();
-  }, [productId]);
-  console.log('productInfo', productInfo);
+  // TODO
+  // [ ] 상품 상세페이지 내부 캐러셀 이미지 표시 안됨
 
   useEffect(() => {
     const getUserinfo = async () => {
@@ -53,14 +58,28 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const userId = userinfo?.userId;
   console.log('유저아이디', userId);
 
-  const renderImages = ({item}) => (
-    <Image source={item} style={styles.carouselImage} />
-  );
-  // CHECK 제안리스트의 상품 클릭 시 해당 상품 상세 페이지로 이동.
-  const handleProductPress = (id: number) => {
-    navigation.navigate('ProductDetail', {productId: id});
+  const renderImages = ({ item }: ListRenderItemInfo<IS3Image>) => {
+    return (
+      <Image
+        source={{ uri: item.imageUrl }}
+        style={styles.carouselImage}
+      />
+    );
   };
-
+  useEffect(() => {
+    if (!isLoading) {
+      const urls = productInfo[0]?.images?.map((image: IS3Image) => ({
+        imageUrl: image.imageUrl,
+      }));
+      setImgUrls(urls || [])
+    }
+  },[isLoading, productInfo]);
+  // const imageUrls = productInfo[0]?.images?.map((image: IS3Image) => ({imageUrl: image.imageUrl}));
+  // console.log('imageUrls', imageUrls);
+  // CHECK 제안리스트의 상품 클릭 시 해당 상품 상세 페이지로 이동.
+  // const handleProductPress = (id: number) => {
+  //   navigation.navigate('ProductDetail', {productId: id});
+  // };
 
   const pressSuggest = () => {
     navigation.navigate('ProductRegister', {
@@ -71,19 +90,21 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   return (
     <View style={styles.container}>
       {/* 캐러셀 슬라이드 */}
-      <FlatList
-        data={productInfo?.images} // 상품 이미지 데이터 사용
-        renderItem={renderImages}
-        keyExtractor={(item, index) => index.toString()}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-      />
+      {!isLoading && (
+      <CustomFlatList
+      data={imgUrls}
+      renderItem={renderImages}
+      keyExtractor={(item, index) => index.toString()}
+      horizontal
+      pagingEnabled
+      showsHorizontalScrollIndicator={false}
+    />
+      )}
 
-      {/* 사용자 정보 구역 */}
       <View style={styles.userInfoContainer}>
         <Typo>사용자 정보 구역</Typo>
       </View>
+      
 
       {/* 탭 */}
       <View style={styles.tabsContainer}>
@@ -116,7 +137,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
             renderItem={({item}) => (
               <ProductCard
                 // imageUrl={item.images[0].imageUrl}
-                imageUrl={item.images[0]}
+                imageUrl={item.images[0].imageUrl}
                 title={item.title}
                 description={item.description}
                 content_type={item.content_type}
@@ -153,10 +174,11 @@ const styles = StyleSheet.create({
   },
   carouselImage: {
     width: Dimensions.get('window').width, // 이미지 너비를 화면 너비로 설정
-    height: 200, // 이미지 높이 설정 (필요에 따라 조절)
+    height: Dimensions.get('window').height * 0.4, // 이미지 높이 설정 (필요에 따라 조절)
   },
   userInfoContainer: {
     padding: 16,
+    height: Dimensions.get('window').height * 0.1,
   },
   tabsContainer: {
     flexDirection: 'row',
