@@ -83,8 +83,10 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
 
   const pressSuggest = () => {
     navigation.navigate('ProductRegister', {
+      type: '교환',
       offer: true,
       productId: productId,
+      proposalId: productInfo[0]?.userId,
     });
   };
   return (

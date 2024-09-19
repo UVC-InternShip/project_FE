@@ -39,13 +39,15 @@ function ProductRegisterPage({
   const route = useRoute();
   const {type} = route.params as {type: string};
   const {offer} = route.params as {offer: string};
+  const {productId} = route.params as {productId: number};
+  const {proposalId} = route.params as {proposalId: number};
   // type은 '교환' 또는 '나눔' 중 하나이다.
   const [tradeType, setTradeType] = useState<string>('교환');
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [userinfo, setUserInfo] = useState<any>(null);
   const [image, setImage] = useState<TImage[]>([]);
-
+  console.log('type|offer|productId|proposalId', type, offer, productId, proposalId);
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
@@ -82,9 +84,9 @@ function ProductRegisterPage({
         Alert.alert(response.errorMessage);
       } else {
         if (response.assets) {
-          // console.log('카메라촬영', response.assets);
           const img = response.assets as TImage[];
-          setImage(img);
+          console.log('img', img);
+          setImage(prevImages => [...prevImages, ...img]);
         }
       }
     });
@@ -106,6 +108,7 @@ function ProductRegisterPage({
     } else {
       console.log('이미지선택', response.assets);
       const img = response.assets as TImage[];
+      console.log('img', img);
       setImage(img);
     }
   };
@@ -114,8 +117,8 @@ function ProductRegisterPage({
     setImage(image.filter((_, i) => i !== index)); // image 상태 업데이트
   };
 
-  const {mutate: registerProduct} = useRegisterProduct();
-  const {mutate: offerProduct} = useOfferProduct();
+  const {mutate: registerProduct} = useRegisterProduct(navigation);
+  const {mutate: offerProduct} = useOfferProduct(navigation);
 
   const pressRegisterProduct = async () => {
     const formData = new FormData();
@@ -138,14 +141,12 @@ function ProductRegisterPage({
     console.log('폼데이터:', formData);
     try {
       if (offer) {
-        // formData.append('proposalUserId', userinfo?.userId.toString());
-        // formData.append('offererUserId', offer);
-        // formData.append('proposerContentId', offer); // offererUserId or proposalUserId
+        formData.append('proposalUserId', proposalId);
+        formData.append('offererUserId', userinfo?.userId.toString());
+        formData.append('proposerContentId', productId); // offererUserId or proposalUserId
         offerProduct(formData);
-        navigation.goBack();
       } else {
         registerProduct(formData);
-        navigation.goBack();
       }
     } catch (error) {
       console.error('Error registering product:', error);
