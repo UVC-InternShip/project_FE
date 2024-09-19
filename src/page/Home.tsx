@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, View} from 'react-native';
 import CustomButton from '../components/Button';
 import Typo from '../components/Typo';
 import {useProductList} from '../store/query/useGetProductList';
 import {NavigationProp} from '@react-navigation/native';
 import ProductCard from '../components/ProductCard';
-// import {dummyData} from '../assets/dummy';
-// import axios from 'axios';
-// import {API_URL} from '../../config';
+
 
 interface HomeProps {
   navigation: NavigationProp<any>;
@@ -15,21 +13,16 @@ interface HomeProps {
 
 function Home({navigation}: HomeProps): JSX.Element {
   // const [showButton, setShowButton] = useState(false);
-  const {isLoading, data: products} = useProductList();
+  const { data: products} = useProductList();
   // TODO
   // [ ] isLoading 시 보여줄 프로그레스 구현.
   // [ ] 물물교환과 나눔 상품 필터링 구현.
-  // const [productList, setProductList] = useState<any[]>([]);
-  // console.log('products', products.map(el => el.images));
+  console.log('products 정보가 추가되었나요?', products);
 
-  // const pressBarterBtn = () => {
-  //   navigation.navigate('ProductRegister', {type: 'barter'});
-  // };
-
-  // const pressShareBtn = () => {
-  //   navigation.navigate('ProductRegister', {type: 'share'});
-  // };
-
+  useEffect(() => {
+    // products가 변경되었다면 게시글 조회를 다시 시도.
+    console.log('새로고침');
+  }, [products])
   const pressRegisterBtn = () => {
     navigation.navigate('ProductRegister', {type: 'trade'});
   };
