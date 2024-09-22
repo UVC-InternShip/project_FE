@@ -8,10 +8,10 @@ import axios from 'axios';
 import {API_URL} from '../../../config';
 import {useQuery} from '@tanstack/react-query';
 
-const fetchProposalList = async (proposalContentId: number) => {
+const fetchProposerList = async (proposerContentId: number) => {
   try {
     const response = await axios.get(
-      `${API_URL}/offer/contentsList?proposalContentId=${proposalContentId}`,
+      `${API_URL}/offer/contentsList?proposerContentId=${proposerContentId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -24,10 +24,10 @@ const fetchProposalList = async (proposalContentId: number) => {
   }
 };
 
-export const useGetProposalList = (proposalContentId: number) => {
+export const useGetProposerList = (proposerContentId: number) => {
   return useQuery({
-    queryKey: ['proposalList', proposalContentId],
-    queryFn: () => fetchProposalList(proposalContentId),
+    queryKey: ['proposerList', proposerContentId],
+    queryFn: () => fetchProposerList(proposerContentId),
     enabled: true,
   });
 };

@@ -8,7 +8,7 @@ interface ProductCardProps {
   imageUrl: string;
   title: string;
   description?: string;
-  content_type?: string;
+  contentType?: string;
   purpose?: string;
   status?: string;
   created_at?: string;
@@ -17,7 +17,7 @@ interface ProductCardProps {
 function ProductCard({
   imageUrl,
   title,
-  content_type,
+  contentType,
   purpose,
   status,
   created_at,
@@ -34,7 +34,7 @@ function ProductCard({
           {description}
         </Typo> */}
         <Typo color="black" fontSize={14}>
-          {content_type} - {purpose} - {status}
+          {contentType} - {purpose} - {status}
         </Typo>
         <Typo color="gray" fontSize={12}>
           {created_at}
