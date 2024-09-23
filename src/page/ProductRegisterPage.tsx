@@ -1,13 +1,6 @@
 // import {useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import {Alert, KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, View} from 'react-native';
 import Typo from '../components/Typo';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -22,10 +15,7 @@ import LocalImage from '../components/LocalImage';
 import {TImage} from '../interface/interface';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp, useRoute} from '@react-navigation/native';
-import {
-  useOfferProduct,
-  useRegisterProduct,
-} from '../store/mutation/useRegisterProduct';
+import {useOfferProduct, useRegisterProduct} from '../store/mutation/useRegisterProduct';
 
 const MAX_IMAGE_COUNT = 5;
 
@@ -33,9 +23,7 @@ interface ProductRegisterPageProps {
   navigation: NavigationProp<any>;
 }
 
-function ProductRegisterPage({
-  navigation,
-}: ProductRegisterPageProps): JSX.Element {
+function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Element {
   const route = useRoute();
   const {type} = route.params as {type: string};
   const {offer} = route.params as {offer: string};
@@ -47,7 +35,6 @@ function ProductRegisterPage({
   const [description, setDescription] = useState<string>('');
   const [userinfo, setUserInfo] = useState<any>(null);
   const [image, setImage] = useState<TImage[]>([]);
-  console.log('type|offer|productId|proposalId', type, offer, productId, proposalId);
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
@@ -85,13 +72,11 @@ function ProductRegisterPage({
       } else {
         if (response.assets) {
           const img = response.assets as TImage[];
-          console.log('img', img);
           setImage(prevImages => [...prevImages, ...img]);
         }
       }
     });
   };
-  console.log('image', image);
 
   const pressSelectImage = async () => {
     const options: ImageLibraryOptions = {
@@ -100,15 +85,12 @@ function ProductRegisterPage({
     };
 
     const response = await launchImageLibrary(options);
-    console.log(response);
     if (response.didCancel) {
       Alert.alert('취소되었습니다.');
     } else if (response.errorMessage) {
       Alert.alert('Error :' + response.errorMessage);
     } else {
-      console.log('이미지선택', response.assets);
       const img = response.assets as TImage[];
-      console.log('img', img);
       setImage(img);
     }
   };
@@ -227,9 +209,7 @@ function ProductRegisterPage({
             style={styles.tradeButton}
             onPress={() => toggleTradeType(1)}
             selected={tradeType === '교환'}>
-            <Typo color={tradeType === '교환' ? 'white' : 'black'}>
-              물물교환
-            </Typo>
+            <Typo color={tradeType === '교환' ? 'white' : 'black'}>물물교환</Typo>
           </CustomButton>
           <CustomButton
             style={styles.tradeButton}
@@ -251,9 +231,7 @@ function ProductRegisterPage({
           value={description}
         />
       </View>
-      <CustomButton
-        onPress={pressRegisterProduct}
-        style={styles.registerButton}>
+      <CustomButton onPress={pressRegisterProduct} style={styles.registerButton}>
         <Typo fontSize={24} style={{fontWeight: 700}}>
           등록하기
         </Typo>

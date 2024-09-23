@@ -42,7 +42,7 @@ function Home({navigation}: HomeProps): JSX.Element {
             imageUrl={item.images[0].imageUrl}
             title={item.title}
             description={item.description}
-            content_type={item.content_type}
+            contentType={item.contentType}
             purpose={item.purpose}
             status={item.status}
             created_at={item.created_at}

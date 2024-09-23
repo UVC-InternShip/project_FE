@@ -58,6 +58,7 @@ export default function App(): JSX.Element {
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('isLogin');
+      await AsyncStorage.removeItem('userinfo');
       setIsLogin(false);
     } catch (error) {
       console.error('Error removing login status:', error);
@@ -69,9 +70,7 @@ export default function App(): JSX.Element {
   }
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer
-        ref={navigatorRef}
-        onReady={() => setIsNavigatorReady(true)}>
+      <NavigationContainer ref={navigatorRef} onReady={() => setIsNavigatorReady(true)}>
         <Stack.Navigator>
           {isLogin ? (
             <>
@@ -81,9 +80,7 @@ export default function App(): JSX.Element {
                 options={{
                   header: ({navigation}) => (
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <Text style={{flex: 1, textAlign: 'center'}}>
-                        바꾸자고
-                      </Text>
+                      <Text style={{flex: 1, textAlign: 'center'}}>바꾸자고</Text>
                       <Icon.Button
                         onPress={() => navigation.navigate('Search')}
                         name="search"
@@ -108,42 +105,21 @@ export default function App(): JSX.Element {
               />
             </>
           ) : (
-            <Stack.Screen
-              name="Auth"
-              component={AuthPage}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="Auth" component={AuthPage} options={{headerShown: false}} />
           )}
           <Stack.Screen name="Signup">
-            {props => (
-              <SignupPage {...props} isNavigatorReady={isNavigatorReady} />
-            )}
+            {props => <SignupPage {...props} isNavigatorReady={isNavigatorReady} />}
           </Stack.Screen>
           <Stack.Screen name="Search" component={SearchPage} />
-          <Stack.Screen
-            name="ProductRegister"
-            component={ProductRegisterPage}
-          />
+          <Stack.Screen name="ProductRegister" component={ProductRegisterPage} />
           <Stack.Screen
             name="modifyUserInfo"
             component={modifyUserInfo}
             options={{title: '프로필 수정'}}
           />
-          <Stack.Screen
-            name="Transaction"
-            component={Transaction}
-            options={{title: '나의 활동'}}
-          />
-          <Stack.Screen
-            name="MyPoint"
-            component={MyPoint}
-            options={{title: '내 포인트'}}
-          />
-          <Stack.Screen
-            name="Reputation"
-            component={Reputation}
-            options={{title: '받은 평가'}}
-          />
+          <Stack.Screen name="Transaction" component={Transaction} options={{title: '나의 활동'}} />
+          <Stack.Screen name="MyPoint" component={MyPoint} options={{title: '내 포인트'}} />
+          <Stack.Screen name="Reputation" component={Reputation} options={{title: '받은 평가'}} />
           <Stack.Screen name="ProductDetail" component={ProductDetailPage} />
         </Stack.Navigator>
       </NavigationContainer>

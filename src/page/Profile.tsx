@@ -2,11 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View, Image, Alert} from 'react-native';
 import CustomButton from '../components/Button';
 import Typo from '../components/Typo';
-import {
-  NavigationProp,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native';
 import axios from 'axios';
 import {API_URL} from '../../config';
 
@@ -37,6 +33,7 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
   //   }
   // }, [route.params?.updatedProfile]);
 
+  // TODO : AsyncStorage에 존재하는 userinfo를 가져와서 userProfile state update
   const fetchUserProfile = async () => {
     try {
       const userId = 1;
@@ -91,19 +88,13 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
 
       {/* 프로필 섹션 */}
       <View style={styles.profileSection}>
-        <Text style={styles.profileName}>
-          이름: {userProfile?.name || '이름 없음'}
-        </Text>
-        <Text style={styles.profileName}>
-          Point: {userProfile?.pointEarned || '0'}
-        </Text>
+        <Text style={styles.profileName}>이름: {userProfile?.name || '이름 없음'}</Text>
+        <Text style={styles.profileName}>Point: {userProfile?.pointEarned || '0'}</Text>
       </View>
 
       {/* 프로필 수정 버튼 */}
       <View style={styles.modify}>
-        <CustomButton
-          style={styles.modifyButtonContainer}
-          onPress={modifyUserInfo}>
+        <CustomButton style={styles.modifyButtonContainer} onPress={modifyUserInfo}>
           <Typo color="black" fontSize={16} style={styles.modifyButtonText}>
             프로필 수정
           </Typo>
@@ -112,9 +103,7 @@ function Profile({navigation}: ProfilePageProps): JSX.Element {
 
       {/* 평판 확인 */}
       <View style={styles.reputationSection}>
-        <Text style={styles.profileName}>
-          평판점수: {userProfile?.reputationScore || '0'}점
-        </Text>
+        <Text style={styles.profileName}>평판점수: {userProfile?.reputationScore || '0'}점</Text>
       </View>
 
       {/* 메뉴 리스트 */}

@@ -49,7 +49,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   // NOTE: 상품 조회 API 존재하지 않음. 백엔드 문의.
   // TODO
   // [ ] 상품 상세페이지 내부 캐러셀 이미지 표시 안됨
-
+  console.log('제안목록', proposalList);
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
@@ -121,30 +121,32 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       {/* 탭 내용 */}
       {activeTab === '상품 정보' && (
         <View style={styles.tabContent}>
-          <Typo>{productInfo?.description}</Typo>
+          <Typo>{productInfo[0]?.description}</Typo>
         </View>
       )}
-      {activeTab === '제안 목록' && (
+      {/* 아직 제안된 내용이 없다면 이에 대한 처리를 해주어야함 */}
+      {activeTab === '제안 목록' && !isLoadingProposalList && (
         <View style={styles.tabContent}>
-          <FlatList
-            data={dummyData}
-            horizontal
-            keyExtractor={item => item.id.toString()}
-            renderItem={({item}) => (
-              <ProductCard
-                // imageUrl={item.images[0].imageUrl}
-                imageUrl={item.images[0].imageUrl}
-                title={item.title}
-                description={item.description}
-                content_type={item.content_type}
-                purpose={item.purpose}
-                status={item.status}
-                // created_at={item.created_at}
-                // onPress={() => handleProductPress(item.id)}
-              />
-            )}
-            contentContainerStyle={styles.listContainer}
-          />
+          {proposalList.length > 0 ? (
+            <FlatList
+              data={dummyData}
+              horizontal
+              keyExtractor={item => item.id.toString()}
+              renderItem={({item}) => (
+                <ProductCard
+                  imageUrl={item.images[0].imageUrl}
+                  title={item.title}
+                  description={item.description}
+                  contentType={item.content_type}
+                  purpose={item.purpose}
+                  status={item.status}
+                />
+              )}
+              contentContainerStyle={styles.listContainer}
+            />
+          ) : (
+            <Typo>제안 목록이 없습니다.</Typo>
+          )}
         </View>
       )}
 
