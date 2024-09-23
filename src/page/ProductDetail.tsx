@@ -35,26 +35,16 @@ interface ProductDetailPageProps {
 function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const route = useRoute();
   const {productId} = route.params as {productId: number};
-  console.log('productId', typeof productId);
   const {isLoading: isLoadingProductInfo, data: productInfo} = useProductInfo(productId);
-
-  console.log('productInfo', productInfo);
-  console.log('productId', productId);
-  // const [productInfo, setProductInfo] = useState<IProduct | undefined>(
-  //   undefined,
-  // );
-  // console.log(productInfo.images[0])
-  console.log('productInfo 타입', typeof productInfo);
-
+  const [productOwnerId, setProductOwnerId] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>('상품 정보');
   // TODO
   // [ ] 제안목록 useQuery로 받아오기
   const {isLoading: isLoadingProposalList, data: proposalList} = useGetProposerList(productId);
-  // useEffect(() => {
-  //   if (!isLoadingProposalList) {
-
   const [userinfo, setUserInfo] = useState<any>(null);
-  const productRegisterUserId = productInfo[0]?.userId;
+  // const productRegisterUserId = productInfo[0]?.userId;
+  console.log(productInfo);
+  console.log('상품 주인', productOwnerId);
   const [imgUrls, setImgUrls] = useState<{imageUrl: string}[]>([]);
   // NOTE: 상품 조회 API 존재하지 않음. 백엔드 문의.
   // TODO
@@ -67,21 +57,21 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
     };
     getUserinfo();
   }, []);
-  console.log('userInfo', userinfo);
   const userId = userinfo?.userId;
-  console.log('유저아이디', userId);
 
   const renderImages = ({item}: ListRenderItemInfo<IS3Image>) => {
     return <Image source={{uri: item.imageUrl}} style={styles.carouselImage} />;
   };
   useEffect(() => {
-    if (!isLoadingProductInfo) {
+    if (!isLoadingProductInfo && productInfo && productInfo.length > 0) {
+      setProductOwnerId(productInfo[0].userId);
       const urls = productInfo[0]?.images?.map((image: IS3Image) => ({
         imageUrl: image.imageUrl,
       }));
       setImgUrls(urls || []);
     }
   }, [isLoadingProductInfo, productInfo]);
+
   // const imageUrls = productInfo[0]?.images?.map((image: IS3Image) => ({imageUrl: image.imageUrl}));
   // console.log('imageUrls', imageUrls);
   // CHECK 제안리스트의 상품 클릭 시 해당 상품 상세 페이지로 이동.
@@ -97,7 +87,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       proposalId: productInfo[0]?.userId,
     });
   };
-  console.log(Dimensions.get('window').width, Dimensions.get('window').height);
+
   return (
     <View style={styles.container}>
       {/* 캐러셀 슬라이드 */}
@@ -159,7 +149,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       )}
 
       <View style={styles.buttonContainer}>
-        {userId !== productRegisterUserId && (
+        {userId !== productOwnerId && (
           <CustomButton style={styles.button} onPress={pressSuggest}>
             <Typo fontSize={16} color="white">
               제안하기
