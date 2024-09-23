@@ -45,11 +45,13 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   // const productRegisterUserId = productInfo[0]?.userId;
   console.log(productInfo);
   console.log('상품 주인', productOwnerId);
+  console.log('제안목록', proposalList);
   const [imgUrls, setImgUrls] = useState<{imageUrl: string}[]>([]);
   // NOTE: 상품 조회 API 존재하지 않음. 백엔드 문의.
   // TODO
   // [ ] 상품 상세페이지 내부 캐러셀 이미지 표시 안됨
   console.log('제안목록', proposalList);
+  // CHECK: 제안목록을 불러왔을 때, 제안목록을 보여줄 정보가 담겨 있지 않음.
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
@@ -119,7 +121,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       </View>
 
       {/* 탭 내용 */}
-      {activeTab === '상품 정보' && (
+      {activeTab === '상품 정보' && !isLoadingProductInfo && (
         <View style={styles.tabContent}>
           <Typo>{productInfo[0]?.description}</Typo>
         </View>
@@ -129,12 +131,12 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
         <View style={styles.tabContent}>
           {proposalList.length > 0 ? (
             <FlatList
-              data={dummyData}
+              data={proposalList}
               horizontal
-              keyExtractor={item => item.id.toString()}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={({item}) => (
                 <ProductCard
-                  imageUrl={item.images[0].imageUrl}
+                  // imageUrl={item.images[0].imageUrl}
                   title={item.title}
                   description={item.description}
                   contentType={item.content_type}
