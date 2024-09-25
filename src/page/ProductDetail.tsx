@@ -40,17 +40,17 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const [activeTab, setActiveTab] = useState<string>('상품 정보');
   // TODO
   // [ ] 제안목록 useQuery로 받아오기
-  const {isLoading: isLoadingProposalList, data: proposalList} = useGetProposerList(productId);
+  const {isLoading: isLoadingProposalList, data: proposerList} = useGetProposerList(productId);
   const [userinfo, setUserInfo] = useState<any>(null);
   // const productRegisterUserId = productInfo[0]?.userId;
   console.log(productInfo);
   console.log('상품 주인', productOwnerId);
-  console.log('제안목록', proposalList);
+  console.log('제안목록', proposerList);
   const [imgUrls, setImgUrls] = useState<{imageUrl: string}[]>([]);
   // NOTE: 상품 조회 API 존재하지 않음. 백엔드 문의.
   // TODO
   // [ ] 상품 상세페이지 내부 캐러셀 이미지 표시 안됨
-  console.log('제안목록', proposalList);
+  console.log('제안목록', proposerList);
   // CHECK: 제안목록을 불러왔을 때, 제안목록을 보여줄 정보가 담겨 있지 않음.
   useEffect(() => {
     const getUserinfo = async () => {
@@ -60,6 +60,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
     getUserinfo();
   }, []);
   const userId = userinfo?.userId;
+  console.log('현재 사용자', userId);
 
   const renderImages = ({item}: ListRenderItemInfo<IS3Image>) => {
     return <Image source={{uri: item.imageUrl}} style={styles.carouselImage} />;
@@ -88,6 +89,10 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       productId: productId,
       proposalId: productInfo[0]?.userId,
     });
+  };
+
+  const pressSuggestProduct = (id: number) => {
+    navigation.navigate('ProductDetail', {productId: id});
   };
 
   return (
@@ -129,19 +134,20 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       {/* 아직 제안된 내용이 없다면 이에 대한 처리를 해주어야함 */}
       {activeTab === '제안 목록' && !isLoadingProposalList && (
         <View style={styles.tabContent}>
-          {proposalList.length > 0 ? (
+          {proposerList.length > 0 ? (
             <FlatList
-              data={proposalList}
+              data={proposerList}
               horizontal
               keyExtractor={(item, index) => index.toString()}
               renderItem={({item}) => (
                 <ProductCard
-                  // imageUrl={item.images[0].imageUrl}
+                  imageUrl={item.images[0].imageUrl}
                   title={item.title}
                   description={item.description}
                   contentType={item.content_type}
                   purpose={item.purpose}
                   status={item.status}
+                  onPress={() => pressSuggestProduct(item.contentsId)}
                 />
               )}
               contentContainerStyle={styles.listContainer}
@@ -214,6 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6235e7',
   },
   listContainer: {
+    width: Dimensions.get('window').width * 0.5,
     paddingHorizontal: 16,
     gap: 16,
     paddingTop: 16,
