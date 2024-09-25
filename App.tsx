@@ -27,9 +27,15 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ProductRegisterPage from './src/page/ProductRegisterPage';
 import ProductDetailPage from './src/page/ProductDetail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {API_URL} from './config';
 
 const Stack = createNativeStackNavigator();
 
+interface IToken {
+  accessToken: string;
+  refreshToken: string;
+}
 export default function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [isLogin, setIsLogin] = useAtom(isLoggedInAtom);
@@ -40,9 +46,31 @@ export default function App(): JSX.Element {
 
   const getLoginStatus = useCallback(async () => {
     const res = await AsyncStorage.getItem('isLogin');
-    console.log('res', res);
-    setIsLogin(res === 'true');
+    const token = await AsyncStorage.getItem('token');
+    const result = await checkDBUser(JSON.parse(token!));
+    if (res === 'true' && result === true) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
   }, [setIsLogin]);
+
+  const checkDBUser = async (token: IToken) => {
+    try {
+      const response = await axios.post(`${API_URL}/token/validate-token`, {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+      });
+      if (response.data.valid === true) {
+        console.log('유효함.');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error('Error checking DB user:', error);
+    }
+  };
 
   useEffect(() => {
     setTimeout(() => {
