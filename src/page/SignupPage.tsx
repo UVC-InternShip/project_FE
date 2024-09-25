@@ -13,10 +13,7 @@ interface SignupPageProps {
   navigation: NavigationProp<any>;
   isNavigatorReady: boolean;
 }
-function SignupPage({
-  navigation,
-  isNavigatorReady,
-}: SignupPageProps): JSX.Element {
+function SignupPage({navigation, isNavigatorReady}: SignupPageProps): JSX.Element {
   // const [nickname, setNickname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [activateBtn, setActivateBtn] = useState(false);
@@ -53,21 +50,23 @@ function SignupPage({
 
   const checkAuthCode = async () => {
     try {
-      await axios
-        .post(`${baseUrl}/sms/verify-code`, {
-          phoneNumber: phoneNumber,
-          code: authCode,
-        })
-        .then(res => {
-          if (res.data.success === true) {
-            AsyncStorage.setItem('isLogin', 'true');
-            AsyncStorage.setItem('userinfo', JSON.stringify(res.data.user));
-            setIsLogin(true);
-            navigation.navigate('Main');
-          } else {
-            setIsCodeConfirmed(true);
-          }
-        });
+      const response = await axios.post(`${baseUrl}/sms/verify-code`, {
+        phoneNumber: phoneNumber,
+        code: authCode,
+      });
+      if (response.data.success === true) {
+        const tokens = {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        };
+        await AsyncStorage.setItem('userinfo', JSON.stringify(response.data.user));
+        await AsyncStorage.setItem('isLogin', 'true');
+        await AsyncStorage.setItem('token', JSON.stringify(tokens));
+        setIsLogin(true);
+        navigation.navigate('Main');
+      } else {
+        setIsCodeConfirmed(true);
+      }
     } catch (error) {
       console.error('Error verifying auth code:', error);
     }
@@ -76,21 +75,27 @@ function SignupPage({
 
   const pressSingUp = async () => {
     try {
-      await axios
-        .post(`${baseUrl}/users/register`, {
-          phoneNumber: phoneNumber,
-          name: nickname,
-        })
-        .then(res => {
-          AsyncStorage.setItem('isLogin', 'true');
-          setIsLogin(true);
-          navigation.navigate('Main');
-        });
+      const response = await axios.post(`${baseUrl}/users/register`, {
+        phoneNumber: phoneNumber,
+        name: nickname,
+      });
+      if (response.data.accessToken && response.data.refreshToken) {
+        const tokens = {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        };
+        await AsyncStorage.setItem('userinfo', JSON.stringify(response.data.user));
+        await AsyncStorage.setItem('isLogin', 'true');
+        await AsyncStorage.setItem('token', JSON.stringify(tokens));
+        setIsLogin(true);
+        navigation.navigate('Main');
+      } else {
+        console.error('토큰이 없습니다.');
+      }
     } catch (error) {
       console.error('Error registering user:', error);
     }
   };
-
   useEffect(() => {
     if (isNavigatorReady && isLogin) {
       navigation.navigate('Main');
@@ -116,10 +121,7 @@ function SignupPage({
         />
       </View>
 
-      <CustomButton
-        onPress={pressSendBtn}
-        style={styles.button}
-        disabled={!activateBtn}>
+      <CustomButton onPress={pressSendBtn} style={styles.button} disabled={!activateBtn}>
         <Typo color={activateBtn ? 'black' : '#919191'} fontSize={16}>
           인증번호 받기
         </Typo>
