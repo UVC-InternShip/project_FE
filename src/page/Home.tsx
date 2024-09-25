@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
+import React, {useEffect, useMemo} from 'react';
+import {ActivityIndicator, FlatList, StyleSheet, View} from 'react-native';
 import CustomButton from '../components/Button';
 import Typo from '../components/Typo';
 import {useProductList} from '../store/query/useGetProductList';
@@ -12,21 +12,32 @@ interface HomeProps {
 
 function Home({navigation}: HomeProps): JSX.Element {
   // const [showButton, setShowButton] = useState(false);
-  const {data: products} = useProductList();
+  const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useProductList();
   // TODO
   // [ ] isLoading 시 보여줄 프로그레스 구현.
   // [ ] 물물교환과 나눔 상품 필터링 구현.
-
+  const products = useMemo(() => data?.pages.flat() || [], [data]);
+  console.log(products);
   useEffect(() => {
     // products가 변경되었다면 게시글 조회를 다시 시도.
     console.log('새로고침');
   }, [products]);
+
+  console.log('hasNextPage', hasNextPage);
+  console.log('isFetchingNextPage', isFetchingNextPage);
   const pressRegisterBtn = () => {
     navigation.navigate('ProductRegister', {type: 'trade'});
   };
 
   const handleProductPress = (id: number) => {
     navigation.navigate('ProductDetail', {productId: id});
+  };
+
+  const loadMoreProducts = () => {
+    if (hasNextPage) {
+      console.log('다음 페이지를 불러오는 중...........!!!!!!!!');
+      fetchNextPage();
+    }
   };
   return (
     <View style={styles.container}>
@@ -35,10 +46,9 @@ function Home({navigation}: HomeProps): JSX.Element {
       </CustomButton>
       <FlatList
         data={products}
-        keyExtractor={item => item.contentsId}
+        keyExtractor={item => item.contentsId.toString()}
         renderItem={({item}) => (
           <ProductCard
-            // imageUrl={item.images[0].imageUrl}
             imageUrl={item.images[0].imageUrl}
             title={item.title}
             description={item.description}
@@ -50,6 +60,11 @@ function Home({navigation}: HomeProps): JSX.Element {
           />
         )}
         contentContainerStyle={styles.listContainer}
+        onEndReached={loadMoreProducts}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? <ActivityIndicator size="large" color="#0000ff" /> : null
+        }
       />
     </View>
   );
