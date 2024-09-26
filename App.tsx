@@ -29,6 +29,7 @@ import ProductDetailPage from './src/page/ProductDetail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {API_URL} from './config';
+import ChatRoom from './src/page/ChatRoom';
 
 const Stack = createNativeStackNavigator();
 
@@ -149,6 +150,13 @@ export default function App(): JSX.Element {
           <Stack.Screen name="MyPoint" component={MyPoint} options={{title: '내 포인트'}} />
           <Stack.Screen name="Reputation" component={Reputation} options={{title: '받은 평가'}} />
           <Stack.Screen name="ProductDetail" component={ProductDetailPage} />
+          <Stack.Screen
+            name="ChatRoom"
+            component={ChatRoom}
+            // options={{
+            //   headerShown: false,
+            // }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
