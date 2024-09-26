@@ -97,7 +97,6 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
         writerId: productOwnerId,
         itemId: productId,
       });
-      console.log('채팅방 생성:', response.data.message);
       if (response.data.message === 'success') {
         navigation.navigate('ChatRoom', {
           userId: userId,
