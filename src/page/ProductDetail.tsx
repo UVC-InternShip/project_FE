@@ -138,7 +138,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
             <FlatList
               data={proposerList}
               horizontal
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={item => item.contentsId.toString()}
               renderItem={({item}) => (
                 <ProductCard
                   imageUrl={item.images[0].imageUrl}
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6235e7',
   },
   listContainer: {
-    width: Dimensions.get('window').width * 0.5,
+    // width: Dimensions.get('window').width * 0.5,
     paddingHorizontal: 16,
     gap: 16,
     paddingTop: 16,
