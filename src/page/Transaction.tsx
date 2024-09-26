@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
-import { API_URL } from '../../config';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
+import {API_URL} from '../../config';
 import axios from 'axios';
 
 function Transaction(): JSX.Element {
@@ -15,12 +15,12 @@ function Transaction(): JSX.Element {
   const fetchUserContents = async () => {
     try {
       const userId = 1;
-      const response = await axios.post(`${API_URL}/contents/listUser`, { userId: userId });
+      const response = await axios.get(`${API_URL}/contents/listUser?userId=${userId}`);
       const contents = response.data.result;
-      
+      console.log('불러온 데이터:', contents);
       const trades = [];
       const donations = [];
-      
+
       contents.forEach(content => {
         const item = {
           id: content.contentsId.toString(),
@@ -28,7 +28,7 @@ function Transaction(): JSX.Element {
           status: content.status,
           description: content.description,
         };
-        
+
         if (content.purpose === '교환') {
           trades.push(item);
         } else if (content.purpose === '나눔') {
@@ -38,7 +38,6 @@ function Transaction(): JSX.Element {
 
       setTradeItems(trades);
       setDonationItems(donations);
-      
     } catch (error) {
       console.log('불러오기 실패:', error);
       throw error;
@@ -46,11 +45,11 @@ function Transaction(): JSX.Element {
   };
 
   // 리스트 아이템을 렌더링하는 함수
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     let statusStyle;
     let statusText;
 
-    switch(item.status) {
+    switch (item.status) {
       case '대기중':
         statusStyle = styles.statusWaiting;
         statusText = '대기중';
@@ -70,14 +69,12 @@ function Transaction(): JSX.Element {
 
     return (
       <View style={styles.itemContainer}>
-        <Image style={styles.itemImage} source={{ uri: 'https://via.placeholder.com/50' }} />
+        <Image style={styles.itemImage} source={{uri: 'https://via.placeholder.com/50'}} />
         <View style={styles.itemTextContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
         </View>
         <View style={styles.itemStatusContainer}>
-          <Text style={[styles.itemStatus, statusStyle]}>
-            {statusText}
-          </Text>
+          <Text style={[styles.itemStatus, statusStyle]}>{statusText}</Text>
         </View>
       </View>
     );
@@ -89,14 +86,12 @@ function Transaction(): JSX.Element {
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tabButton, selectedTab === '교환' && styles.activeTab]}
-          onPress={() => setSelectedTab('교환')}
-        >
+          onPress={() => setSelectedTab('교환')}>
           <Text style={[styles.tabText, selectedTab === '교환' && styles.activeTabText]}>교환</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, selectedTab === '나눔' && styles.activeTab]}
-          onPress={() => setSelectedTab('나눔')}
-        >
+          onPress={() => setSelectedTab('나눔')}>
           <Text style={[styles.tabText, selectedTab === '나눔' && styles.activeTabText]}>나눔</Text>
         </TouchableOpacity>
       </View>
