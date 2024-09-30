@@ -28,7 +28,7 @@ function ChatRoom(): JSX.Element {
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    const socket = io('http://localhost:3000'); // 서버 URL로 변경
+    const socket = io('http://10.0.2.2:3000'); // 서버 URL로 변경
     console.log('소켓 연결됨', socket);
 
     socket.emit('join-chat', {userId, chatRoomId});
@@ -48,7 +48,7 @@ function ChatRoom(): JSX.Element {
 
   const sendMessage = () => {
     if (message.trim()) {
-      const socket = io('http://localhost:3000');
+      const socket = io('http://10.0.2.2:3000');
       socket.emit('message-send', {
         userId: userId,
         chatRoomId: chatRoomId,
