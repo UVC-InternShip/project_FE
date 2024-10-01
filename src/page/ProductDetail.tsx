@@ -121,8 +121,13 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
     console.log('교환 채팅하기');
   };
 
-  const pressSuggestProduct = (id: number) => {
-    navigation.navigate('ProductDetail', {productId: id});
+  const pressSuggestProduct = () => {
+    navigation.navigate('ProductRegister', {
+      type: '교환',
+      offer: true,
+      productId: productId,
+      proposalId: productInfo[0]?.userId,
+    });
   };
 
   // const pressShareChat = () => {
