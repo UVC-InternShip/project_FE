@@ -48,11 +48,13 @@ export default function App(): JSX.Element {
   const getLoginStatus = useCallback(async () => {
     const res = await AsyncStorage.getItem('isLogin');
     const token = await AsyncStorage.getItem('token');
-    const result = await checkDBUser(JSON.parse(token!));
-    if (res === 'true' && result === true) {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
+    if (token) {
+      const result = await checkDBUser(JSON.parse(token!));
+      if (res === 'true' && result === true) {
+        setIsLogin(true);
+      } else {
+        setIsLogin(false);
+      }
     }
   }, [setIsLogin]);
 
