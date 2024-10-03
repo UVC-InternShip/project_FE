@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Image, Alert} from 'react-native';
-import CustomButton from '../components/Button';
-import Typo from '../components/Typo';
-import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native';
+import {StyleSheet, Text, View, Alert} from 'react-native';
+import CustomButton from '../../components/common/Button';
+import Typo from '../../components/common/Typo';
+import {NavigationProp, useRoute} from '@react-navigation/native';
 import axios from 'axios';
-import {API_URL} from '../../config';
+import {API_URL} from '../../../config';
 
 interface ProfilePageProps {
   navigation: NavigationProp<any>;

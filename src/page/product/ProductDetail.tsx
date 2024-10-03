@@ -1,8 +1,7 @@
 import {NavigationProp, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {dummyData} from '../assets/dummy';
-import {IS3Image} from '../interface/interface';
-import Typo from '../components/Typo';
+import {IS3Image} from '../../interface/interface';
+import Typo from '../../components/common/Typo';
 import {
   Button,
   Dimensions,
@@ -13,15 +12,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import CustomButton from '../components/Button';
+import CustomButton from '../../components/common/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProductCard from '../components/ProductCard';
-import {useProductInfo} from '../store/query/useGetProductInfo';
-// import RemoteImage from '../components/RemoteImage';
-import CustomFlatList from '../components/CustomFlatList';
-import {useGetProposerList} from '../store/query/useGetProposalList';
+import ProductCard from '../../components/common/ProductCard';
+import {useProductInfo} from '../../store/query/useGetProductInfo';
+// import RemoteImage from '../../components/RemoteImage';
+import CustomFlatList from '../../components/common/CustomFlatList';
+import {useGetProposerList} from '../../store/query/useGetProposalList';
 import axios from 'axios';
-import {API_URL} from '../../config';
+import {API_URL} from '../../../config';
 
 // CHECKLIST : 상품 상세 페이지
 // DESC 1. 내가 올린 상품의 상세 페이지에선 제안하기 버튼이 표시되지 않아야 한다.

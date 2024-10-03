@@ -1,8 +1,8 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../page/Home';
-import Chat from '../page/Chat';
-import Profile from '../page/Profile';
+import Chat from '../page/chat/Chat';
+import Profile from '../page/profile/Profile';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
@@ -23,16 +23,8 @@ export default function TabNavigator(): JSX.Element {
           tabBarIcon: () => HomeIcon,
         }}
       />
-      <Tab.Screen
-        name="Chat"
-        component={Chat}
-        options={{tabBarIcon: () => ChatIcon}}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{tabBarIcon: () => ProfileIcon}}
-      />
+      <Tab.Screen name="Chat" component={Chat} options={{tabBarIcon: () => ChatIcon}} />
+      <Tab.Screen name="Profile" component={Profile} options={{tabBarIcon: () => ProfileIcon}} />
     </Tab.Navigator>
   );
 }

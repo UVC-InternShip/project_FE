@@ -1,10 +1,10 @@
 import React, {useEffect, useMemo} from 'react';
 import {ActivityIndicator, FlatList, StyleSheet, View} from 'react-native';
-import CustomButton from '../components/Button';
-import Typo from '../components/Typo';
+import CustomButton from '../components/common/Button';
+import Typo from '../components/common/Typo';
 import {useProductList} from '../store/query/useGetProductList';
 import {NavigationProp} from '@react-navigation/native';
-import ProductCard from '../components/ProductCard';
+import ProductCard from '../components/common/ProductCard';
 
 interface HomeProps {
   navigation: NavigationProp<any>;

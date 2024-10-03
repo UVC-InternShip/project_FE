@@ -1,8 +1,8 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import Typo from '../components/Typo';
-import LocalImage from '../components/LocalImage';
-import CustomButton from '../components/Button';
+import Typo from '../../components/common/Typo';
+import LocalImage from '../../components/common/LocalImage';
+import CustomButton from '../../components/common/Button';
 import {NavigationProp} from '@react-navigation/native';
 
 interface AuthPageProps {
@@ -18,11 +18,7 @@ function AuthPage({navigation}: AuthPageProps): JSX.Element {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
-        <LocalImage
-          localAsset={require('../assets/logo.png')}
-          width={100}
-          height={100}
-        />
+        <LocalImage localAsset={require('../../assets/logo.png')} width={100} height={100} />
         <Typo color="black" fontSize={20} style={styles.text}>
           필요없는 물건이 있나요?
         </Typo>

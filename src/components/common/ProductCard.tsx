@@ -2,7 +2,6 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import RemoteImage from './RemoteImage';
 import Typo from './Typo';
-import LocalImage from './LocalImage';
 
 interface ProductCardProps {
   imageUrl: string;

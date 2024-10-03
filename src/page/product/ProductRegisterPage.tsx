@@ -1,7 +1,7 @@
 // import {useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, View} from 'react-native';
-import Typo from '../components/Typo';
+import Typo from '../../components/common/Typo';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   launchCamera,
@@ -10,12 +10,12 @@ import {
   ImagePickerResponse,
   ImageLibraryOptions,
 } from 'react-native-image-picker';
-import CustomButton from '../components/Button';
-import LocalImage from '../components/LocalImage';
-import {TImage} from '../interface/interface';
+import CustomButton from '../../components/common/Button';
+import LocalImage from '../../components/common/LocalImage';
+import {TImage} from '../../interface/interface';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp, useRoute} from '@react-navigation/native';
-import {useOfferProduct, useRegisterProduct} from '../store/mutation/useRegisterProduct';
+import {useOfferProduct, useRegisterProduct} from '../../store/mutation/useRegisterProduct';
 
 const MAX_IMAGE_COUNT = 5;
 

@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
-import Typo from '../components/Typo';
-import CustomButton from '../components/Button';
+import Typo from '../../components/common/Typo';
+import CustomButton from '../../components/common/Button';
 import {NavigationProp} from '@react-navigation/native';
 import {useAtom} from 'jotai';
-import {isLoggedInAtom} from '../store/atom/auth';
+import {isLoggedInAtom} from '../../store/atom/auth';
 import axios from 'axios';
-import {API_URL} from '../../config';
+import {API_URL} from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface SignupPageProps {

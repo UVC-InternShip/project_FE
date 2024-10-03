@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
-import {API_URL} from '../../config';
+import {API_URL} from '../../../config';
 import axios from 'axios';
 
 function Transaction(): JSX.Element {
