@@ -9,8 +9,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigator from './src/router/TabNav';
-import {Text, View} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import SearchPage from './src/page/Search';
 import SplashScreen from 'react-native-splash-screen';
 import Transaction from './src/page/Transaction';
@@ -30,6 +28,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {API_URL} from './config';
 import ChatRoom from './src/page/ChatRoom';
+import MainHeader from './src/components/header/MainHeader';
 
 const Stack = createNativeStackNavigator();
 
@@ -109,29 +108,7 @@ export default function App(): JSX.Element {
                 name="Main"
                 component={TabNavigator}
                 options={{
-                  header: ({navigation}) => (
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <Text style={{flex: 1, textAlign: 'center'}}>바꾸자고</Text>
-                      <Icon.Button
-                        onPress={() => navigation.navigate('Search')}
-                        name="search"
-                        backgroundColor={'#fff'}
-                        color={'#000'}
-                      />
-                      <Icon.Button
-                        onPress={() => console.log('This is a button!')}
-                        name="notifications"
-                        backgroundColor={'#fff'}
-                        color={'#000'}
-                      />
-                      <Icon.Button
-                        onPress={logout}
-                        name="log-out-outline"
-                        backgroundColor={'#fff'}
-                        color={'#000'}
-                      />
-                    </View>
-                  ),
+                  header: ({navigation}) => <MainHeader navigation={navigation} logout={logout} />,
                 }}
               />
             </>
