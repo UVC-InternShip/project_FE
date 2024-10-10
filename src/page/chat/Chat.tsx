@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {API_URL} from '../../config';
+import {API_URL} from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp} from '@react-navigation/native';
 
@@ -19,6 +19,7 @@ function Chat({navigation}: ChatProps): JSX.Element {
     try {
       const userinfo = await AsyncStorage.getItem('userinfo');
       const userID = JSON.parse(userinfo!).userId;
+      console.log(userID);
       const response = await axios.get(`${API_URL}/chat/list?userId=${userID}`);
       if (response.status === 200) {
         setChatRooms(response.data.chatRooms);

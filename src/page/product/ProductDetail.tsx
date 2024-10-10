@@ -91,7 +91,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   // DESC 3. productId => 채팅을 시작하려는 상품의 아이디
   const pressShareChat = async () => {
     try {
-      const response = await axios.post(`${API_URL}/chat/create`, {
+      const response = await axios.post(`${API_URL}/chat/share/create`, {
         userId: userId,
         writerId: productOwnerId,
         itemId: productId,
