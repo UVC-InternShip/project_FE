@@ -20,6 +20,7 @@ function ChatRoom(): JSX.Element {
     productId: number;
     chatRoomId: string;
   };
+  console.log('chatRoomId', chatRoomId);
 
   const [messages, setMessages] = useState<IChatMessage[]>([]);
   const [message, setMessage] = useState<string>('');
@@ -85,9 +86,10 @@ function ChatRoom(): JSX.Element {
         message: message,
       });
       console.log('메시지 전송:', newMessage);
-      setMessages(prevMessages => [...prevMessages, newMessage]); // 메시지 상태 업데이트
+      setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessage('');
     }
+    console.log('현재 채팅 기록123123123', messages); // 메시지 상태 업데이트
   };
 
   return (
@@ -106,7 +108,7 @@ function ChatRoom(): JSX.Element {
               maxWidth: '80%', // 메시지 최대 너비
             }}>
             <Text style={{color: item.senderId === userId ? 'white' : 'red'}}>{item.message}</Text>
-            <Text style={{color: 'gray', fontSize: 10}}>
+            <Text style={{color: 'black', fontSize: 10}}>
               {new Date(item.timestamp).toLocaleTimeString()} {/* 타임스탬프 추가 */}
             </Text>
           </View>

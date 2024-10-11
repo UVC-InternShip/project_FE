@@ -92,10 +92,11 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const pressShareChat = async () => {
     try {
       const response = await axios.post(`${API_URL}/chat/share/create`, {
-        userId: userId,
-        writerId: productOwnerId,
-        itemId: productId,
+        requesterId: userId,
+        sharerId: productOwnerId,
+        contentId: productId,
       });
+      console.log('response', response.data);
       if (response.data.message === 'success') {
         navigation.navigate('ChatRoom', {
           userId: userId,
@@ -108,7 +109,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
           userId: userId,
           writerId: productOwnerId,
           itemId: productId,
-          chatRoomId: response.data.checkroom._id,
+          chatRoomId: response.data.result.chatroomId,
         });
       }
     } catch (error) {
@@ -128,7 +129,6 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       proposalId: productInfo[0]?.userId,
     });
   };
-
   // const pressShareChat = () => {
   //   navigation.navigate('ChatRoom', {
   //     userId: productOwnerId,
