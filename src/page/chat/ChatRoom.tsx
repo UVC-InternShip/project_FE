@@ -59,12 +59,16 @@ function ChatRoom(): JSX.Element {
     });
 
     socket.on('receive-message', newMessage => {
+      console.log('receive-message 수신된 데이터:', newMessage);
       // const formattedMessage = {
       //   senderId: newMessage.senderId,
       //   message: newMessage.message,
       //   timestamp: new Date(),
       // };
-      setMessages(prevMessages => [...prevMessages, ...newMessage]);
+      if (newMessage && newMessage.senderId !== userId) {
+        console.log('메시지 수신');
+        setMessages(prevMessages => [...prevMessages, newMessage]); // 상태 업데이트
+      }
     });
 
     return () => {
@@ -89,7 +93,6 @@ function ChatRoom(): JSX.Element {
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessage('');
     }
-    console.log('현재 채팅 기록123123123', messages); // 메시지 상태 업데이트
   };
 
   return (
