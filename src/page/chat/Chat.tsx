@@ -15,22 +15,32 @@ interface ChatProps {
 function Chat({navigation}: ChatProps): JSX.Element {
   const [selectedTab, setSelectedTab] = useState('교환');
   const [chatRooms, setChatRooms] = useState<any[]>([]);
+  const [filteredChatRooms, setFilteredChatRooms] = useState<any[]>([]);
+  const [userID, setUserID] = useState<number>();
   const fetchChatList = async () => {
     try {
       const userinfo = await AsyncStorage.getItem('userinfo');
-      const userID = JSON.parse(userinfo!).userId;
-      console.log(userID);
-      const response = await axios.get(`${API_URL}/chat/list?userId=${userID}`);
+      const userId = JSON.parse(userinfo!).userId;
+      setUserID(userId); // userId 세��
+      const response = await axios.get(`${API_URL}/chat/list?userId=${userId}`);
       if (response.status === 200) {
         setChatRooms(response.data.chatRooms);
+        filterChatRooms(response.data.chatRooms, selectedTab);
       }
     } catch (error) {
       console.error(error);
     }
   };
+  const filterChatRooms = (rooms: any[], tab: string) => {
+    const filteredRooms = rooms.filter(room => room.item.purpose === tab);
+    setFilteredChatRooms(filteredRooms);
+  };
   useEffect(() => {
     fetchChatList();
   }, []);
+  useEffect(() => {
+    filterChatRooms(chatRooms, selectedTab); // 탭 변경 시 필터링
+  }, [selectedTab, chatRooms]);
   // useEffect(() => {
 
   // }, []);
@@ -42,21 +52,28 @@ function Chat({navigation}: ChatProps): JSX.Element {
   //     console.error(error);
   //   }
   // };
+  const moveChatRoom = (chatRoomId: number) => {
+    navigation.navigate('ChatRoom', {userId: userID, chatRoomId: chatRoomId}); // userId, chatRoomId를 navigationParams로 전��
+  };
 
   console.log('chatRooms:', chatRooms);
-  const renderItems = () => {
+  const renderItem = ({item}: any) => {
     return (
-      <View>
-        {chatRooms.map((room, index) => (
-          <TouchableOpacity key={index} style={styles.itemContainer}>
-            <Text>{room._id}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => moveChatRoom(item.id)} // room.id를 사용하여 채팅방으로 이동
+      >
+        <Text style={styles.title}>{item.item.title}</Text>
+        <Text style={styles.date}>
+          {new Date(item.date).toLocaleDateString()} {/* 날짜 형식화 */}
+        </Text>
+        <Text style={styles.status}>{item.item.status}</Text>
+      </TouchableOpacity>
     );
   };
   return (
     <View style={styles.container}>
+      {/* 탭 UI */}
       {/* <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tabButton, selectedTab === '교환' && styles.activeTab]}
@@ -70,9 +87,11 @@ function Chat({navigation}: ChatProps): JSX.Element {
         </TouchableOpacity>
       </View> */}
 
-      <View>
-        <FlatList data={chatRooms} renderItem={renderItems} />
-      </View>
+      <FlatList
+        data={chatRooms}
+        renderItem={renderItem}
+        keyExtractor={item => item.id} // 고유 ID 사용
+      />
     </View>
   );
 }
@@ -85,6 +104,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  itemContainer: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  date: {
+    fontSize: 12,
+    color: 'gray',
+  },
+  status: {
+    fontSize: 14,
+    color: 'blue',
   },
   tabContainer: {
     flexDirection: 'row',
@@ -107,11 +144,6 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: 'black',
     fontWeight: 'bold',
-  },
-  itemContainer: {
-    paddingHorizontal: 16,
-    gap: 16,
-    paddingTop: 16,
   },
 });
 
