@@ -9,10 +9,10 @@ import {NavigationProp} from '@react-navigation/native';
 // DESC 1. 채팅 리스트에 대한 페이지.
 // DESC 2. 물물교환 채팅 탭과 나눔 채팅 탭이 있어야 한다.
 //
-interface ChatProps {
+interface IChatProps {
   navigation: NavigationProp<any>;
 }
-function Chat({navigation}: ChatProps): JSX.Element {
+function Chat({navigation}: IChatProps): JSX.Element {
   const [selectedTab, setSelectedTab] = useState('교환');
   const [chatRooms, setChatRooms] = useState<any[]>([]);
   const [filteredChatRooms, setFilteredChatRooms] = useState<any[]>([]);
