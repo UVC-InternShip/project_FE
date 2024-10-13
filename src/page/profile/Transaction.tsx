@@ -2,11 +2,30 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
 import {API_URL} from '../../../config';
 import axios from 'axios';
+import {NavigationProp} from '@react-navigation/native';
 
-function Transaction(): JSX.Element {
+interface IProduct {
+  id: string;
+  name: string;
+  status: string;
+  description: string;
+}
+
+interface IContent {
+  contentsId: number;
+  title: string;
+  status: string;
+  description: string;
+  purpose?: string;
+}
+
+interface ITransactionProps {
+  navigation: NavigationProp<any>;
+}
+function Transaction({navigation}: ITransactionProps): JSX.Element {
   const [selectedTab, setSelectedTab] = useState('교환');
-  const [tradeItems, setTradeItems] = useState([]);
-  const [donationItems, setDonationItems] = useState([]);
+  const [tradeItems, setTradeItems] = useState<IProduct[]>([]);
+  const [donationItems, setDonationItems] = useState<IProduct[]>([]);
 
   useEffect(() => {
     fetchUserContents();
@@ -18,10 +37,10 @@ function Transaction(): JSX.Element {
       const response = await axios.get(`${API_URL}/contents/listUser?userId=${userId}`);
       const contents = response.data.result;
       console.log('불러온 데이터:', contents);
-      const trades = [];
-      const donations = [];
+      const trades: IProduct[] = [];
+      const donations: IProduct[] = [];
 
-      contents.forEach(content => {
+      contents.forEach((content: IContent) => {
         const item = {
           id: content.contentsId.toString(),
           name: content.title,
@@ -45,7 +64,7 @@ function Transaction(): JSX.Element {
   };
 
   // 리스트 아이템을 렌더링하는 함수
-  const renderItem = ({item}) => {
+  const renderItem = ({item}: {item: IProduct}) => {
     let statusStyle;
     let statusText;
 
@@ -67,16 +86,20 @@ function Transaction(): JSX.Element {
         statusText = item.status;
     }
 
+    const handlePress = () => {
+      navigation.navigate('ProductDetail', {productId: item.id});
+    };
+
     return (
-      <View style={styles.itemContainer}>
+      <TouchableOpacity onPress={handlePress} style={styles.itemContainer}>
         <Image style={styles.itemImage} source={{uri: 'https://via.placeholder.com/50'}} />
         <View style={styles.itemTextContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
         </View>
         <View style={styles.itemStatusContainer}>
-          <Text style={[styles.itemStatus, statusStyle]}>{statusText}</Text>
+          <Text style={[styles.itemStatus, statusStyle]}>{item.status}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
