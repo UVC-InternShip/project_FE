@@ -88,7 +88,7 @@ function Chat({navigation}: IChatProps): JSX.Element {
       </View>
 
       <FlatList
-        data={chatRooms}
+        data={filteredChatRooms}
         renderItem={renderItem}
         keyExtractor={item => item.id} // 고유 ID 사용
       />
