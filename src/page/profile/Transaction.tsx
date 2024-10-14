@@ -9,6 +9,7 @@ interface IProduct {
   name: string;
   status: string;
   description: string;
+  images?: Array<{imageUrl: string}>;
 }
 
 interface IContent {
@@ -17,6 +18,7 @@ interface IContent {
   status: string;
   description: string;
   purpose?: string;
+  images?: Array<{imageUrl: string}>;
 }
 
 interface ITransactionProps {
@@ -36,7 +38,6 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
       const userId = 1;
       const response = await axios.get(`${API_URL}/contents/listUser?userId=${userId}`);
       const contents = response.data.result;
-      console.log('불러온 데이터:', contents);
       const trades: IProduct[] = [];
       const donations: IProduct[] = [];
 
@@ -46,6 +47,7 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
           name: content.title,
           status: content.status,
           description: content.description,
+          images: content.images,
         };
 
         if (content.purpose === '교환') {
@@ -85,14 +87,17 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
         statusStyle = styles.statusDefault;
         statusText = item.status;
     }
-
+    const imageUrl =
+      item.images && item.images.length > 0
+        ? item.images[0].imageUrl
+        : 'https://via.placeholder.com/50';
     const handlePress = () => {
       navigation.navigate('ProductDetail', {productId: item.id});
     };
 
     return (
       <TouchableOpacity onPress={handlePress} style={styles.itemContainer}>
-        <Image style={styles.itemImage} source={{uri: 'https://via.placeholder.com/50'}} />
+        <Image style={styles.itemImage} source={{uri: imageUrl}} />
         <View style={styles.itemTextContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
         </View>
