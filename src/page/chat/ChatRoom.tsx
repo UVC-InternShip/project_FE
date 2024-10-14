@@ -12,6 +12,12 @@ interface IChatMessage {
   timestamp: string;
 }
 
+interface IChatInfo {
+  itemId: number;
+  writerId: number;
+  requesterId: number;
+}
+
 function ChatRoom(): JSX.Element {
   const route = useRoute();
   const {userId, writerId, productId, chatRoomId} = route.params as {
@@ -21,9 +27,13 @@ function ChatRoom(): JSX.Element {
     chatRoomId: string;
   };
   console.log('chatRoomId', chatRoomId);
+  console.log('writerId', writerId);
+  console.log('productId', productId);
+  console.log('userId', userId);
 
   const [messages, setMessages] = useState<IChatMessage[]>([]);
   const [message, setMessage] = useState<string>('');
+  const [chatInfo, setChatInfo] = useState<IChatInfo>();
   const socketRef = useRef<any>(null);
   const socketUrl = 'http://10.0.2.2:3000';
 
@@ -44,6 +54,11 @@ function ChatRoom(): JSX.Element {
 
     socket.on('chat-history', data => {
       console.log('chat-history 수신됨:', data);
+      setChatInfo({
+        itemId: data.chatInfo.itemId,
+        writerId: data.chatInfo.member[0],
+        requesterId: data.chatInfo.member[1],
+      });
       if (data && data.message) {
         setMessages(
           data.message.map((el: any) => ({
@@ -76,7 +91,7 @@ function ChatRoom(): JSX.Element {
       socket.disconnect();
     };
   }, [userId, chatRoomId]);
-
+  console.log('채팅방정보', chatInfo);
   const sendMessage = () => {
     if (message.trim() && socketRef.current) {
       const newMessage = {
@@ -93,6 +108,10 @@ function ChatRoom(): JSX.Element {
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessage('');
     }
+  };
+
+  const handleTrade = () => {
+    console.log('거래하기 버튼 클릭');
   };
 
   return (
@@ -118,12 +137,16 @@ function ChatRoom(): JSX.Element {
         )}
         keyExtractor={item => item.timestamp}
       />
+      {chatInfo && chatInfo.writerId === userId && (
+        <Button title="거래하기" onPress={handleTrade} />
+      )}
       <TextInput
         value={message}
         onChangeText={setMessage}
         placeholder="메시지를 입력하세요"
         style={{padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5}}
       />
+
       <Button title="전송" onPress={sendMessage} />
     </View>
   );
