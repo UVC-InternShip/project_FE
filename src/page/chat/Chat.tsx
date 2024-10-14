@@ -74,7 +74,7 @@ function Chat({navigation}: IChatProps): JSX.Element {
   return (
     <View style={styles.container}>
       {/* 탭 UI */}
-      {/* <View style={styles.tabContainer}>
+      <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tabButton, selectedTab === '교환' && styles.activeTab]}
           onPress={() => setSelectedTab('교환')}>
@@ -85,7 +85,7 @@ function Chat({navigation}: IChatProps): JSX.Element {
           onPress={() => setSelectedTab('나눔')}>
           <Text style={[styles.tabText, selectedTab === '나눔' && styles.activeTabText]}>나눔</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
 
       <FlatList
         data={chatRooms}
