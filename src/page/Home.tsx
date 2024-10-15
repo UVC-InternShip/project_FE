@@ -5,6 +5,7 @@ import Typo from '../components/common/Typo';
 import {useProductList} from '../store/query/useGetProductList';
 import {NavigationProp} from '@react-navigation/native';
 import ProductCard from '../components/common/ProductCard';
+import {useQueryClient} from '@tanstack/react-query';
 
 interface HomeProps {
   navigation: NavigationProp<any>;
@@ -17,7 +18,12 @@ function Home({navigation}: HomeProps): JSX.Element {
   // [ ] isLoading 시 보여줄 프로그레스 구현.
   // [ ] 물물교환과 나눔 상품 필터링 구현.
   const products = useMemo(() => data?.pages.flat() || [], [data]);
-  console.log(products);
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 쿼리 무효화
+    queryClient.invalidateQueries({queryKey: ['productList']});
+  }, []);
+
   useEffect(() => {
     // products가 변경되었다면 게시글 조회를 다시 시도.
     console.log('새로고침');

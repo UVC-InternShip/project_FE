@@ -1,8 +1,7 @@
 import axios from 'axios';
 import {API_URL} from '../../../config';
-// import {IFormData, IFormData2} from '../../interface/interface';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
-import { NavigationProp } from '@react-navigation/native';
+import {NavigationProp} from '@react-navigation/native';
 
 const registerProduct = async (product: FormData) => {
   const response = await axios.post(`${API_URL}/contents/register`, product, {
