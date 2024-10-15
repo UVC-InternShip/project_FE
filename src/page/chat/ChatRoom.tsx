@@ -64,8 +64,6 @@ function ChatRoom(): JSX.Element {
     console.log('joined chat', {userId, chatRoomId});
 
     socket.on('chat-history', data => {
-      console.log('chat-history 수신됨:', data);
-      console.log('chat-history 수신됨:', data.contentInfo[0].firstImage);
       setChatInfo({
         itemId: data.chatInfo.itemId,
         writerId: data.chatInfo.member[0],
