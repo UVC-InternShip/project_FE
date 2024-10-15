@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-n
 import {API_URL} from '../../../config';
 import axios from 'axios';
 import {NavigationProp} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface IProduct {
   id: string;
@@ -28,16 +29,26 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
   const [selectedTab, setSelectedTab] = useState('교환');
   const [tradeItems, setTradeItems] = useState<IProduct[]>([]);
   const [donationItems, setDonationItems] = useState<IProduct[]>([]);
-
+  const [userinfo, setUserInfo] = useState<any>(null);
   useEffect(() => {
     fetchUserContents();
   }, []);
 
+  useEffect(() => {
+    const getUserinfo = async () => {
+      const userinfos = await AsyncStorage.getItem('userinfo');
+      setUserInfo(JSON.parse(userinfos!));
+    };
+    getUserinfo();
+  }, []);
+  const userId = Number(userinfo?.userId);
+
   const fetchUserContents = async () => {
     try {
-      const userId = 1;
+      // const userId = 1;
       const response = await axios.get(`${API_URL}/contents/listUser?userId=${userId}`);
       const contents = response.data.result;
+      console.log('contents:', contents);
       const trades: IProduct[] = [];
       const donations: IProduct[] = [];
 
