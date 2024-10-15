@@ -3,7 +3,7 @@
 import React, {useRef} from 'react';
 import {useRoute} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
-import {Button, FlatList, Text, TextInput, View} from 'react-native';
+import {Button, Dimensions, FlatList, Image, StyleSheet, Text, TextInput, View} from 'react-native';
 import io from 'socket.io-client';
 
 interface IChatMessage {
@@ -16,6 +16,16 @@ interface IChatInfo {
   itemId: number;
   writerId: number;
   requesterId: number;
+}
+
+interface IChatProductInfo {
+  title: string;
+  firstImage: {
+    imageUrl: string;
+    order: number;
+  };
+  description: string;
+  status: string;
 }
 
 function ChatRoom(): JSX.Element {
@@ -34,6 +44,7 @@ function ChatRoom(): JSX.Element {
   const [messages, setMessages] = useState<IChatMessage[]>([]);
   const [message, setMessage] = useState<string>('');
   const [chatInfo, setChatInfo] = useState<IChatInfo>();
+  const [chatProduct, setChatProduct] = useState<IChatProductInfo[]>([]);
   const socketRef = useRef<any>(null);
   const socketUrl = 'http://10.0.2.2:3000';
 
@@ -54,11 +65,46 @@ function ChatRoom(): JSX.Element {
 
     socket.on('chat-history', data => {
       console.log('chat-history 수신됨:', data);
+      console.log('chat-history 수신됨:', data.contentInfo[0].firstImage);
       setChatInfo({
         itemId: data.chatInfo.itemId,
         writerId: data.chatInfo.member[0],
         requesterId: data.chatInfo.member[1],
       });
+      if (data && data.contentInfo.length > 1) {
+        setChatProduct([
+          {
+            title: data.contentInfo[0].title,
+            firstImage: {
+              imageUrl: data.contentInfo[0].firstImage[0].imageUrl,
+              order: data.contentInfo[0].firstImage[0].order,
+            },
+            description: data.contentInfo[0].description,
+            status: data.contentInfo[0].status,
+          },
+          {
+            title: data.contentInfo[1].title,
+            firstImage: {
+              imageUrl: data.contentInfo[1].firstImage.imageUrl,
+              order: data.contentInfo[1].firstImage.order,
+            },
+            description: data.contentInfo[1].description,
+            status: data.contentInfo[1].status,
+          },
+        ]);
+      } else {
+        setChatProduct([
+          {
+            title: data.contentInfo[0].title,
+            firstImage: {
+              imageUrl: data.contentInfo[0].firstImage.imageUrl,
+              order: data.contentInfo[0].firstImage.order,
+            },
+            description: data.contentInfo[0].description,
+            status: data.contentInfo[0].status,
+          },
+        ]);
+      }
       if (data && data.message) {
         setMessages(
           data.message.map((el: any) => ({
@@ -116,6 +162,17 @@ function ChatRoom(): JSX.Element {
 
   return (
     <View style={{flex: 1}}>
+      <View style={styles.productContainer}>
+        {chatProduct.map((product, index) => (
+          <View key={index} style={styles.productCard}>
+            <Image source={{uri: product.firstImage.imageUrl}} style={styles.productImage} />
+            <View style={styles.productInfo}>
+              <Text style={styles.productTitle}>{product.title}</Text>
+              <Text style={styles.productDescription}>{product.description}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
       <FlatList
         data={messages}
         renderItem={({item}) => (
@@ -129,7 +186,9 @@ function ChatRoom(): JSX.Element {
               padding: 10,
               maxWidth: '80%', // 메시지 최대 너비
             }}>
-            <Text style={{color: item.senderId === userId ? 'white' : 'red'}}>{item.message}</Text>
+            <Text style={{color: item.senderId === userId ? 'white' : 'black'}}>
+              {item.message}
+            </Text>
             <Text style={{color: 'black', fontSize: 10}}>
               {new Date(item.timestamp).toLocaleTimeString()} {/* 타임스탬프 추가 */}
             </Text>
@@ -151,5 +210,38 @@ function ChatRoom(): JSX.Element {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  productContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+  },
+  productCard: {
+    flexDirection: 'row',
+    width: Dimensions.get('window').width * 0.9,
+    height: Dimensions.get('window').height * 0.1,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginBottom: 10,
+  },
+  productImage: {
+    width: '30%',
+    height: '100%',
+  },
+  productInfo: {
+    padding: 10,
+    justifyContent: 'center',
+  },
+  productTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  productDescription: {
+    fontSize: 14,
+    color: '#666',
+  },
+});
 
 export default ChatRoom;
