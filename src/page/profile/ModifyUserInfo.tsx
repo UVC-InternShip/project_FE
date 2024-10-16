@@ -1,73 +1,73 @@
-import React, { useState, useEffect, useCallback  } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, {useState, useEffect, useCallback} from 'react';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Alert} from 'react-native';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import axios from 'axios';
-import { API_URL } from '../../config';
+import {API_URL} from '../../../config';
 
 type RootStackParamList = {
-    Profile: { updatedProfile?: { userId: number; name: string } };
-    ModifyUserInfo: { userProfile: { userId: number; name: string } };
+  Profile: {updatedProfile?: {userId: number; name: string}};
+  ModifyUserInfo: {userProfile: {userId: number; name: string}};
 };
 
-    type ModifyUserInfoNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ModifyUserInfo'>;
-    type ModifyUserInfoRouteProp = RouteProp<RootStackParamList, 'ModifyUserInfo'>;
+type ModifyUserInfoNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ModifyUserInfo'>;
+type ModifyUserInfoRouteProp = RouteProp<RootStackParamList, 'ModifyUserInfo'>;
 
 function ModifyUserInfo(): JSX.Element {
-    const navigation = useNavigation<ModifyUserInfoNavigationProp>();
-    const route = useRoute<ModifyUserInfoRouteProp>();
-    const { userProfile } = route.params;
-    
-    const [nickname, setNickname] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation<ModifyUserInfoNavigationProp>();
+  const route = useRoute<ModifyUserInfoRouteProp>();
+  const {userProfile} = route.params;
 
-useEffect(() => {
+  const [nickname, setNickname] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
     navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity onPress={handleComplete} disabled={isLoading}>
-            <Text style={[styles.headerButton, isLoading && styles.disabledButton]}>
-              {isLoading ? '처리 중...' : '수정'}
-            </Text>
-          </TouchableOpacity>
-        ),
+      headerRight: () => (
+        <TouchableOpacity onPress={handleComplete} disabled={isLoading}>
+          <Text style={[styles.headerButton, isLoading && styles.disabledButton]}>
+            {isLoading ? '처리 중...' : '수정'}
+          </Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, nickname, isLoading]);
+
+  const handleComplete = async () => {
+    const newNickname = nickname.trim() || userProfile.name;
+    if (newNickname === userProfile.name) {
+      Alert.alert('알림', '변경할 새로운 닉네임을 입력해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.put(`${API_URL}/users/update-name/${userProfile.userId}`, {
+        newName: newNickname,
       });
-    }, [navigation, nickname, isLoading]);
 
-    const handleComplete = async () => {
-      const newNickname = nickname.trim() || userProfile.name;
-      if (newNickname === userProfile.name) {
-        Alert.alert('알림', '변경할 새로운 닉네임을 입력해주세요.');
-        return;
+      if (response.status === 200) {
+        Alert.alert('성공', `닉네임이 '${newNickname}'으로 변경되었습니다.`, [
+          {
+            text: '확인',
+            onPress: () => {
+              navigation.navigate('Profile', {
+                updatedProfile: {...userProfile, name: newNickname},
+              });
+            },
+          },
+        ]);
+      } else {
+        throw new Error('서버 응답이 성공이 아닙니다.');
       }
-
-      setIsLoading(true);
-
-      try {
-        const response = await axios.put(`${API_URL}/users/update-name/${userProfile.userId}`, {
-          newName: newNickname,
-        });
-
-        if (response.status === 200) {
-          Alert.alert('성공', `닉네임이 '${newNickname}'으로 변경되었습니다.`, [
-            { 
-              text: '확인', 
-              onPress: () => {
-                navigation.navigate('Profile', { 
-                  updatedProfile: { ...userProfile, name: newNickname }
-                });
-              }
-            }
-          ]);
-        } else {
-          throw new Error('서버 응답이 성공이 아닙니다.');
-        }
-      } catch (error) {
-        console.error('Error updating name:', error);
-        Alert.alert('오류', '닉네임 업데이트에 실패했습니다. 다시 시도해주세요.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    } catch (error) {
+      console.error('Error updating name:', error);
+      Alert.alert('오류', '닉네임 업데이트에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
