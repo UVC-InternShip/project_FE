@@ -29,19 +29,27 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
   const [selectedTab, setSelectedTab] = useState('교환');
   const [tradeItems, setTradeItems] = useState<IProduct[]>([]);
   const [donationItems, setDonationItems] = useState<IProduct[]>([]);
-  const [userinfo, setUserInfo] = useState<any>(null);
-  useEffect(() => {
-    fetchUserContents();
-  }, []);
+  const [userId, setUserId] = useState<number>();
+  // useEffect(() => {
+  //   fetchUserContents();
+  // }, []);
 
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
-      setUserInfo(JSON.parse(userinfos!));
+      const userinfo = JSON.parse(userinfos!);
+      setUserId(Number(userinfo.userId)); // userId 세��
     };
     getUserinfo();
   }, []);
-  const userId = Number(userinfo?.userId);
+
+  useEffect(() => {
+    if (userId !== undefined) {
+      fetchUserContents();
+    }
+  }, [userId]);
+  // const userId = Number(userinfo?.userId);
+  console.log('userId:', userId);
 
   const fetchUserContents = async () => {
     try {
