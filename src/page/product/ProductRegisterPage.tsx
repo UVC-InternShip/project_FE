@@ -1,6 +1,15 @@
 // import {useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, View} from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  PermissionsAndroid,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import Typo from '../../components/common/Typo';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -16,11 +25,19 @@ import {TImage} from '../../interface/interface';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp, useRoute} from '@react-navigation/native';
 import {useOfferProduct, useRegisterProduct} from '../../store/mutation/useRegisterProduct';
+import Geolocation from 'react-native-geolocation-service';
+import axios from 'axios';
+import {API_URL} from '../../../config';
 
 const MAX_IMAGE_COUNT = 5;
 
 interface ProductRegisterPageProps {
   navigation: NavigationProp<any>;
+}
+
+interface ILocation {
+  latitude: number;
+  longitude: number;
 }
 
 function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Element {
@@ -35,6 +52,57 @@ function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Elemen
   const [description, setDescription] = useState<string>('');
   const [userinfo, setUserInfo] = useState<any>(null);
   const [image, setImage] = useState<TImage[]>([]);
+  const [location, setLocation] = useState<ILocation>({latitude: 0, longitude: 0});
+
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: '위치 권한 요청',
+            message: '앱이 위치에 접근하려고 합니다.',
+            buttonNeutral: '나중에',
+            buttonNegative: '취소',
+            buttonPositive: '확인',
+          },
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('위치 권한 허용됨');
+        } else {
+          console.log('위치 권한 거부됨');
+        }
+      }
+    };
+
+    requestLocationPermission();
+  }, []);
+
+  const pressGetGeo = async () => {
+    Geolocation.getCurrentPosition(
+      async position => {
+        const {latitude, longitude} = position.coords;
+        console.log('현재 위치:', position);
+
+        try {
+          const response = await axios.post(`${API_URL}/location/get-address`, {
+            latitude: latitude,
+            longitude: longitude,
+          });
+          console.log('주소 정보:', response.data);
+          // 여기서 필요한 추가 작업을 수행합니다.
+        } catch (error) {
+          console.error('주소 정보를 가져오는 중 오류 발생:', error);
+        }
+      },
+      error => {
+        console.log('위치 오류:', error);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  };
+
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
@@ -189,6 +257,11 @@ function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Elemen
           ))}
         </ScrollView>
       </View>
+
+      <View>
+        <Icon.Button name="navigate-circle-outline" size={24} color="blue" onPress={pressGetGeo} />
+      </View>
+
       <View style={styles.postTitleCon}>
         <Typo fontSize={24} style={{fontWeight: 700}}>
           상품 이름
