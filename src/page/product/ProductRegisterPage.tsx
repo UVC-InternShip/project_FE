@@ -52,7 +52,7 @@ function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Elemen
   const [description, setDescription] = useState<string>('');
   const [userinfo, setUserInfo] = useState<any>(null);
   const [image, setImage] = useState<TImage[]>([]);
-  const [location, setLocation] = useState<ILocation>({latitude: 0, longitude: 0});
+  const [address, setAddress] = useState<string>(''); // 주소 상태 추가
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -91,7 +91,7 @@ function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Elemen
             longitude: longitude,
           });
           console.log('주소 정보:', response.data);
-          // 여기서 필요한 추가 작업을 수행합니다.
+          setAddress(response.data.fullAddress); // 주소 상태 업데이트
         } catch (error) {
           console.error('주소 정보를 가져오는 중 오류 발생:', error);
         }
@@ -258,8 +258,9 @@ function ProductRegisterPage({navigation}: ProductRegisterPageProps): JSX.Elemen
         </ScrollView>
       </View>
 
-      <View>
+      <View style={styles.locationContainer}>
         <Icon.Button name="navigate-circle-outline" size={24} color="blue" onPress={pressGetGeo} />
+        <Typo style={styles.addressText}>{address}</Typo>
       </View>
 
       <View style={styles.postTitleCon}>
@@ -424,6 +425,17 @@ const styles = StyleSheet.create({
     // paddingVertical: 8,
     marginBottom: 16,
     marginHorizontal: 16,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginVertical: 8,
+  },
+  addressText: {
+    flex: 1,
+    fontSize: 16,
+    color: 'black',
   },
 });
 
