@@ -23,7 +23,6 @@ function SignupPage({navigation, isNavigatorReady}: SignupPageProps): JSX.Elemen
   const [nickname, setNickname] = useState('');
   // const setIsLogin = useSetAtom(isLoggedInAtom);
   const [isLogin, setIsLogin] = useAtom(isLoggedInAtom);
-
   const baseUrl = API_URL;
   // const navigator = useNavigation();
 
@@ -59,6 +58,7 @@ function SignupPage({navigation, isNavigatorReady}: SignupPageProps): JSX.Elemen
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         };
+        console.log('유저정보 형식', response.data.user);
         await AsyncStorage.setItem('userinfo', JSON.stringify(response.data.user));
         await AsyncStorage.setItem('isLogin', 'true');
         await AsyncStorage.setItem('token', JSON.stringify(tokens));
