@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
 import {API_URL} from '../../../config';
 import axios from 'axios';
@@ -43,25 +43,16 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
     getUserinfo();
   }, []);
 
-  useEffect(() => {
-    if (userId !== undefined) {
-      fetchUserContents();
-    }
-  }, [userId]);
-  // const userId = Number(userinfo?.userId);
-  console.log('userId:', userId);
-
-  const fetchUserContents = async () => {
+  const fetchUserContents = useCallback(async (): Promise<void> => {
     try {
-      // const userId = 1;
       const response = await axios.get(`${API_URL}/contents/listUser?userId=${userId}`);
-      const contents = response.data.result;
+      const contents: IContent[] = response.data.result;
       console.log('contents:', contents);
       const trades: IProduct[] = [];
       const donations: IProduct[] = [];
 
       contents.forEach((content: IContent) => {
-        const item = {
+        const item: IProduct = {
           id: content.contentsId.toString(),
           name: content.title,
           status: content.status,
@@ -82,7 +73,15 @@ function Transaction({navigation}: ITransactionProps): JSX.Element {
       console.log('불러오기 실패:', error);
       throw error;
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId !== undefined) {
+      fetchUserContents();
+    }
+  }, [userId, fetchUserContents]);
+  // const userId = Number(userinfo?.userId);
+  console.log('userId:', userId);
 
   // 리스트 아이템을 렌더링하는 함수
   const renderItem = ({item}: {item: IProduct}) => {
