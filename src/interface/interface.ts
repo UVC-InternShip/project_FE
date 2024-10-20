@@ -8,12 +8,23 @@ export type TImage = {
   width?: number;
   type?: string;
   imageUrl?: string;
-  order?: number
+  order?: number;
 };
 
+export interface IUserInfo {
+  userId: number;
+  phoneNumber: string;
+  email: string | null;
+  name: string | null;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  reputationScore: number;
+}
 export interface IS3Image {
   imageUrl?: string;
-  order?: number
+  order?: number;
 }
 
 export interface IFormData {
