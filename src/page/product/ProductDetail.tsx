@@ -46,13 +46,10 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const [userinfo, setUserInfo] = useState<any>(null);
   const [purpose, setPurpose] = useState<string>('교환');
   // const productRegisterUserId = productInfo[0]?.userId;
-  console.log(productInfo);
-  console.log('상품 주인', productOwnerId);
-  console.log('제안목록', proposerList);
+
   const [imgUrls, setImgUrls] = useState<{imageUrl: string}[]>([]);
 
-  console.log('제안목록', proposerList);
-  // CHECK: 제안목록을 불러왔을 때, 제안목록을 보여줄 정보가 담겨 있지 않음.
+  // DESC 현재 사용자의 정보를 기기 저장소에서 가져온다.
   useEffect(() => {
     const getUserinfo = async () => {
       const userinfos = await AsyncStorage.getItem('userinfo');
@@ -129,13 +126,11 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
       proposalId: productInfo[0]?.userId,
     });
   };
-  // const pressShareChat = () => {
-  //   navigation.navigate('ChatRoom', {
-  //     userId: productOwnerId,
-  //     writerId: userId,
-  //     productId: productId,
-  //   });
-  // };
+
+  const pressSuggestedProduct = (id: number) => {
+    navigation.navigate('ProductDetail', {productId: id});
+  };
+
   return (
     <View style={styles.container}>
       {/* 캐러셀 슬라이드 */}
@@ -194,9 +189,11 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
                       contentType={item.content_type}
                       purpose={item.purpose}
                       status={item.status}
-                      onPress={() => pressSuggestProduct(item.contentsId)}
+                      onPress={() => pressSuggestedProduct(item.contentsId)}
                     />
-                    <Button title="채팅하기" onPress={pressTradeChat} />
+                    {item.offererUserId !== userId && (
+                      <Button title="채팅하기" onPress={pressTradeChat} />
+                    )}
                   </View>
                 )}
                 contentContainerStyle={styles.listContainer}
