@@ -38,7 +38,7 @@ interface ProductDetailPageProps {
 }
 function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const route = useRoute();
-  const {productId} = route.params as {productId: number};
+  const {productId, productUserId} = route.params as {productId: number; productUserId: number};
   const {isLoading: isLoadingProductInfo, data: productInfo} = useProductInfo(productId);
   const [productOwnerId, setProductOwnerId] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>('상품 정보');
@@ -191,7 +191,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
                       status={item.status}
                       onPress={() => pressSuggestedProduct(item.contentsId)}
                     />
-                    {item.offererUserId !== userId && (
+                    {productUserId === userId && (
                       <Button title="채팅하기" onPress={pressTradeChat} />
                     )}
                   </View>

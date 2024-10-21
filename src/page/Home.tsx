@@ -19,6 +19,7 @@ function Home({navigation}: HomeProps): JSX.Element {
   // [ ] 물물교환과 나눔 상품 필터링 구현.
   const products = useMemo(() => data?.pages.flat() || [], [data]);
   const queryClient = useQueryClient();
+  console.log('products', products);
   useEffect(() => {
     // 컴포넌트가 마운트될 때 쿼리 무효화
     queryClient.invalidateQueries({queryKey: ['productList']});
@@ -29,14 +30,12 @@ function Home({navigation}: HomeProps): JSX.Element {
     console.log('새로고침');
   }, [products]);
 
-  console.log('hasNextPage', hasNextPage);
-  console.log('isFetchingNextPage', isFetchingNextPage);
   const pressRegisterBtn = () => {
     navigation.navigate('ProductRegister', {type: 'trade'});
   };
 
-  const handleProductPress = (id: number) => {
-    navigation.navigate('ProductDetail', {productId: id});
+  const handleProductPress = (productId: number, userId: number) => {
+    navigation.navigate('ProductDetail', {productId: productId, productUserId: userId});
   };
 
   const loadMoreProducts = () => {
@@ -62,7 +61,7 @@ function Home({navigation}: HomeProps): JSX.Element {
             purpose={item.purpose}
             status={item.status}
             created_at={item.created_at}
-            onPress={() => handleProductPress(item.contentsId)}
+            onPress={() => handleProductPress(item.contentsId, item.userId)}
           />
         )}
         contentContainerStyle={styles.listContainer}
