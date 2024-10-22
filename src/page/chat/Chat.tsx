@@ -23,6 +23,7 @@ function Chat({navigation}: IChatProps): JSX.Element {
       const userId = JSON.parse(userinfo!).userId;
       setUserID(userId); // userId 세��
       const response = await axios.get(`${API_URL}/chat/list?userId=${userId}`);
+      console.log(response.data.chatRooms.length);
       if (response.status === 200) {
         setChatRooms(response.data.chatRooms);
         filterChatRooms(response.data.chatRooms, selectedTab);

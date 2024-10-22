@@ -16,7 +16,6 @@ import CustomButton from '../../components/common/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductCard from '../../components/common/ProductCard';
 import {useProductInfo} from '../../store/query/useGetProductInfo';
-// import RemoteImage from '../../components/RemoteImage';
 import CustomFlatList from '../../components/common/CustomFlatList';
 import {useGetProposerList} from '../../store/query/useGetProposalList';
 import axios from 'axios';
@@ -114,9 +113,42 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
     }
   };
 
-  const pressTradeChat = () => {
-    console.log('교환 채팅하기');
+  const pressExchangeChat = async (
+    proposerId: number,
+    writerId: number,
+    proposeContentId: number,
+    wrtierContentId: number,
+  ) => {
+    try {
+      const response = await axios.post(`${API_URL}/chat/exchange/create`, {
+        proposalId: proposerId,
+        writerId: writerId,
+        proposeContentId: proposeContentId,
+        writerContentId: wrtierContentId,
+      });
+      if (response.data.message === 'success') {
+        navigation.navigate('ChatRoom', {
+          userId: userId,
+          writerId: productOwnerId,
+          itemId: productId,
+          chatRoomId: response.data.chatRoomId,
+        });
+      } else if (response.data.message === 'already exist') {
+        navigation.navigate('ChatRoom', {
+          userId: userId,
+          writerId: productOwnerId,
+          itemId: productId,
+          chatRoomId: response.data.result.chatroomId,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to create chat room:', error);
+    }
   };
+
+  // const pressTradeChat = () => {
+  //   console.log('교환 채팅하기');
+  // };
 
   const pressSuggestProduct = () => {
     navigation.navigate('ProductRegister', {
@@ -130,7 +162,7 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
   const pressSuggestedProduct = (id: number) => {
     navigation.navigate('ProductDetail', {productId: id});
   };
-
+  console.log('제안리스트', proposerList);
   return (
     <View style={styles.container}>
       {/* 캐러셀 슬라이드 */}
@@ -192,7 +224,17 @@ function ProductDetailPage({navigation}: ProductDetailPageProps): JSX.Element {
                       onPress={() => pressSuggestedProduct(item.contentsId)}
                     />
                     {productUserId === userId && (
-                      <Button title="채팅하기" onPress={pressTradeChat} />
+                      <Button
+                        title="채팅하기"
+                        onPress={() =>
+                          pressExchangeChat(
+                            item.proposerUserId,
+                            item.offererUserId,
+                            item.contentsId,
+                            item.proposerContentId,
+                          )
+                        }
+                      />
                     )}
                   </View>
                 )}
