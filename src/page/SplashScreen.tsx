@@ -5,7 +5,7 @@ import {Image, StyleSheet, View} from 'react-native';
 const SplashScreenPage = (): JSX.Element => {
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/logo.png')} />
+      <Image source={require('../assets/splashLogo.png')} />
     </View>
   );
 };
@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FDEE55',
   },
 });
 
