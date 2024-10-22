@@ -24,6 +24,8 @@ function Chat({navigation}: IChatProps): JSX.Element {
       setUserID(userId); // userId 세��
       const response = await axios.get(`${API_URL}/chat/list?userId=${userId}`);
       console.log(response.data.chatRooms.length);
+      console.log('나눔 아이템 구조', response.data.chatRooms[0].items);
+      console.log('교환 아이템 구조', response.data.chatRooms[3].items);
       if (response.status === 200) {
         setChatRooms(response.data.chatRooms);
         filterChatRooms(response.data.chatRooms, selectedTab);
@@ -33,7 +35,15 @@ function Chat({navigation}: IChatProps): JSX.Element {
     }
   };
   const filterChatRooms = (rooms: any[], tab: string) => {
-    const filteredRooms = rooms.filter(room => room.item.purpose === tab);
+    const filteredRooms = rooms.filter(room => {
+      if (Array.isArray(room.items)) {
+        // items가 배열일 때 (교환의 경우)
+        return room.items.some((item: any) => item.purpose === tab);
+      } else {
+        // items가 단일 객체일 때 (나눔의 경우)
+        return room.items.purpose === tab;
+      }
+    });
     setFilteredChatRooms(filteredRooms);
   };
   useEffect(() => {
@@ -59,18 +69,21 @@ function Chat({navigation}: IChatProps): JSX.Element {
 
   console.log('chatRooms:', chatRooms);
   const renderItem = ({item}: any) => {
-    return (
+    const chatItems = Array.isArray(item.items) ? item.items : [item.items]; // 교환의 경우 배열, 나눔은 단일 객체
+
+    return chatItems.map((chatItem: any) => (
       <TouchableOpacity
+        key={chatItem.id}
         style={styles.itemContainer}
         onPress={() => moveChatRoom(item.id)} // room.id를 사용하여 채팅방으로 이동
       >
-        <Text style={styles.title}>{item.item.title}</Text>
+        <Text style={styles.title}>{chatItem.title}</Text>
         <Text style={styles.date}>
           {new Date(item.date).toLocaleDateString()} {/* 날짜 형식화 */}
         </Text>
-        <Text style={styles.status}>{item.item.status}</Text>
+        <Text style={styles.status}>{chatItem.status}</Text>
       </TouchableOpacity>
-    );
+    ));
   };
   return (
     <View style={styles.container}>
