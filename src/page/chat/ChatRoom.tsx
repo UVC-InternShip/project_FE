@@ -64,31 +64,37 @@ function ChatRoom(): JSX.Element {
     console.log('joined chat', {userId, chatRoomId});
 
     socket.on('chat-history', data => {
-      console.log('chat-history fetch');
+      console.log('-----------------------chat-history fetch-----------------------', data);
+      console.log(
+        '------------proposeContent-----------',
+        data.contentInfo.proposeContent,
+        '------------writerContent------',
+        data.contentInfo.writerContent,
+      );
       setChatInfo({
         itemId: data.chatInfo.itemId,
         writerId: data.chatInfo.member[0],
         requesterId: data.chatInfo.member[1],
       });
-      if (data && data.contentInfo.length > 1) {
+      if (data && Object.keys(data.contentInfo).length > 1) {
         setChatProduct([
           {
-            title: data.contentInfo[0].title,
+            title: data.contentInfo.writerContent[0].title,
             firstImage: {
-              imageUrl: data.contentInfo[0].firstImage[0].imageUrl,
-              order: data.contentInfo[0].firstImage[0].order,
+              imageUrl: data.contentInfo.writerContent[0].firstImage.imageUrl,
+              order: data.contentInfo.writerContent[0].firstImage.order,
             },
-            description: data.contentInfo[0].description,
-            status: data.contentInfo[0].status,
+            description: data.contentInfo.writerContent[0].description,
+            status: data.contentInfo.writerContent[0].status,
           },
           {
-            title: data.contentInfo[1].title,
+            title: data.contentInfo.proposeContent[0].title,
             firstImage: {
-              imageUrl: data.contentInfo[1].firstImage.imageUrl,
-              order: data.contentInfo[1].firstImage.order,
+              imageUrl: data.contentInfo.proposeContent[0].firstImage.imageUrl,
+              order: data.contentInfo.proposeContent[0].firstImage.order,
             },
-            description: data.contentInfo[1].description,
-            status: data.contentInfo[1].status,
+            description: data.contentInfo.proposeContent[0].description,
+            status: data.contentInfo.proposeContent[0].status,
           },
         ]);
       } else {
@@ -212,7 +218,7 @@ function ChatRoom(): JSX.Element {
 
 const styles = StyleSheet.create({
   productContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-around',
     padding: 10,
   },
