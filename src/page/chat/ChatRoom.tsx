@@ -1,9 +1,19 @@
 // CHECKLIST
 // DESC 1. 채팅 방에 대한 페이지.
 import React, {useRef} from 'react';
-import {useRoute} from '@react-navigation/native';
+import {NavigationProp, useRoute} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
-import {Button, Dimensions, FlatList, Image, StyleSheet, Text, TextInput, View} from 'react-native';
+import {
+  Button,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import io from 'socket.io-client';
 
 interface IChatMessage {
@@ -16,6 +26,7 @@ interface IChatInfo {
   itemId: number;
   writerId: number;
   requesterId: number;
+  proposeContentId?: number;
 }
 
 interface IChatProductInfo {
@@ -26,9 +37,15 @@ interface IChatProductInfo {
   };
   description: string;
   status: string;
+  itemId: number;
+  userId: number;
 }
 
-function ChatRoom(): JSX.Element {
+interface IChatProps {
+  navigation: NavigationProp<any>;
+}
+
+function ChatRoom({navigation}: IChatProps): JSX.Element {
   const route = useRoute();
   const {userId, writerId, productId, chatRoomId} = route.params as {
     userId: number;
@@ -61,22 +78,15 @@ function ChatRoom(): JSX.Element {
     });
 
     socket.emit('join-chat', {userId, chatRoomId});
-    console.log('joined chat', {userId, chatRoomId});
 
     socket.on('chat-history', data => {
-      console.log('-----------------------chat-history fetch-----------------------', data);
-      console.log(
-        '------------proposeContent-----------',
-        data.contentInfo.proposeContent,
-        '------------writerContent------',
-        data.contentInfo.writerContent,
-      );
-      setChatInfo({
-        itemId: data.chatInfo.itemId,
-        writerId: data.chatInfo.member[0],
-        requesterId: data.chatInfo.member[1],
-      });
       if (data && Object.keys(data.contentInfo).length > 1) {
+        setChatInfo({
+          itemId: data.chatInfo.itemId.writerContentId,
+          proposeContentId: data.chatInfo.itemId.proposeContentId,
+          writerId: data.chatInfo.member.writerId,
+          requesterId: data.chatInfo.member.proposalId,
+        });
         setChatProduct([
           {
             title: data.contentInfo.writerContent[0].title,
@@ -86,6 +96,8 @@ function ChatRoom(): JSX.Element {
             },
             description: data.contentInfo.writerContent[0].description,
             status: data.contentInfo.writerContent[0].status,
+            itemId: data.chatInfo.itemId.writerContentId,
+            userId: data.chatInfo.member.writerId,
           },
           {
             title: data.contentInfo.proposeContent[0].title,
@@ -95,9 +107,16 @@ function ChatRoom(): JSX.Element {
             },
             description: data.contentInfo.proposeContent[0].description,
             status: data.contentInfo.proposeContent[0].status,
+            itemId: data.chatInfo.itemId.proposeContentId,
+            userId: data.chatInfo.member.proposalId,
           },
         ]);
       } else {
+        setChatInfo({
+          itemId: data.chatInfo.itemId,
+          writerId: data.chatInfo.member[0],
+          requesterId: data.chatInfo.member[1],
+        });
         setChatProduct([
           {
             title: data.contentInfo[0].title,
@@ -107,6 +126,8 @@ function ChatRoom(): JSX.Element {
             },
             description: data.contentInfo[0].description,
             status: data.contentInfo[0].status,
+            itemId: data.chatInfo.itemId,
+            userId: data.chatInfo.member[0],
           },
         ]);
       }
@@ -165,17 +186,24 @@ function ChatRoom(): JSX.Element {
     console.log('거래하기 버튼 클릭');
   };
 
+  const pressProductCard = (productID: number, userID: number) => {
+    navigation.navigate('ProductDetail', {productId: productID, productUserId: userID});
+  };
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.productContainer}>
         {chatProduct.map((product, index) => (
-          <View key={index} style={styles.productCard}>
+          <TouchableOpacity
+            key={index}
+            style={styles.productCard}
+            onPress={() => pressProductCard(product.itemId, product.userId)}>
             <Image source={{uri: product.firstImage.imageUrl}} style={styles.productImage} />
             <View style={styles.productInfo}>
               <Text style={styles.productTitle}>{product.title}</Text>
               <Text style={styles.productDescription}>{product.description}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
       <FlatList
