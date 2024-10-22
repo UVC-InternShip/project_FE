@@ -8,6 +8,7 @@ import {isLoggedInAtom} from '../../store/atom/auth';
 import axios from 'axios';
 import {API_URL} from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LocalImage from '../../components/common/LocalImage';
 
 interface SignupPageProps {
   navigation: NavigationProp<any>;
@@ -102,71 +103,105 @@ function SignupPage({navigation, isNavigatorReady}: SignupPageProps): JSX.Elemen
     }
   }, [isNavigatorReady, isLogin, navigation]);
   return (
-    <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Typo color="black" fontSize={20}>
-          안녕하세요!
-        </Typo>
-        <Typo color="black" fontSize={20}>
-          휴대폰 번호를 입력해주세요.
-        </Typo>
+    <View style={styles.outerContainer}>
+      <View style={styles.topContainer}>
+        <View style={styles.textContainer}>
+          <Typo color="black" fontSize={22} style={styles.text}>
+            안녕하세요!
+          </Typo>
+          <Typo color="black" fontSize={22} style={styles.text}>
+            휴대폰 번호를 입력해주세요.
+          </Typo>
+          <Typo color="black" fontSize={14} style={styles.subText}>
+            본인 인증을 진행 해주세요.
+          </Typo>
+        </View>
+        <View style={styles.imgContainer}>
+          <LocalImage localAsset={require('../../assets/banana.png')} width={150} height={100} />
+        </View>
       </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="휴대폰 번호 (숫자만 입력)"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          keyboardType="numeric"
-        />
-      </View>
-
-      <CustomButton onPress={pressSendBtn} style={styles.button} disabled={!activateBtn}>
-        <Typo color={activateBtn ? 'black' : '#919191'} fontSize={16}>
-          인증번호 받기
-        </Typo>
-      </CustomButton>
-      {isSendClicked && (
+      <View style={styles.bottomContainer}>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="인증 번호 입력"
-            value={authCode}
-            onChangeText={setAuthCode}
+            placeholder="휴대폰 번호"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
             keyboardType="numeric"
           />
-          <CustomButton onPress={checkAuthCode} style={styles.button}>
-            <Typo color="black" fontSize={16}>
-              인증번호 확인
-            </Typo>
-          </CustomButton>
         </View>
-      )}
-      {isCodeConfirmed && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="닉네임을 입력하세요."
-            value={nickname}
-            onChangeText={setNickname}
-          />
-          <CustomButton onPress={pressSingUp} style={styles.button}>
-            <Typo color="black" fontSize={16}>
-              회원가입
-            </Typo>
-          </CustomButton>
-        </View>
-      )}
+
+        <CustomButton onPress={pressSendBtn} style={styles.button} disabled={!activateBtn}>
+          <Typo color={activateBtn ? 'black' : '#606a74'} fontSize={15} style={styles.buttonText}>
+            인증번호 받기
+          </Typo>
+        </CustomButton>
+        {isSendClicked && (
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="인증 번호 입력"
+              value={authCode}
+              onChangeText={setAuthCode}
+              keyboardType="numeric"
+            />
+            <CustomButton onPress={checkAuthCode} style={styles.button}>
+              <Typo color="black" fontSize={15}>
+                인증번호 확인
+              </Typo>
+            </CustomButton>
+          </View>
+        )}
+        {isCodeConfirmed && (
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="닉네임을 입력하세요."
+              value={nickname}
+              onChangeText={setNickname}
+            />
+            <CustomButton onPress={pressSingUp} style={styles.signupButton}>
+              <Typo color="black" fontSize={15} style={styles.signupText}>
+                회원가입
+              </Typo>
+            </CustomButton>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     paddingHorizontal: 16,
+    backgroundColor: 'white',
+    flex: 1,
+  },
+  topContainer: {
+    flex: 1,
+  },
+  imgContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 3,
   },
   textContainer: {
-    paddingTop: 16,
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontWeight: 500,
+    lineHeight: 30,
+  },
+  subText: {
+    fontWeight: 500,
+    color: '#9BA1AA',
+    marginTop: 5,
+  },
+  bottomContainer: {
+    flex: 1,
   },
   inputContainer: {
     marginTop: 16,
@@ -175,19 +210,37 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 10,
+    borderColor: '#E1E3E6',
+    color: 'black',
+    borderRadius: 6,
     height: 50,
   },
   button: {
     width: '100%',
-    borderWidth: 1,
+    backgroundColor: '#f2f4f6',
     marginTop: 16,
     borderColor: 'gray',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: 8,
     height: 50,
+  },
+  buttonText: {
+    lineHeight: 20,
+  },
+  signupButton: {
+    width: '100%',
+    backgroundColor: '#FDEE55',
+    marginTop: 16,
+    borderColor: 'gray',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    height: 50,
+  },
+  signupText: {
+    lineHeight: 20,
+    color: '#1a1b1f',
   },
 });
 

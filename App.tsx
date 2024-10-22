@@ -115,7 +115,7 @@ export default function App(): JSX.Element {
           ) : (
             <Stack.Screen name="Auth" component={AuthPage} options={{headerShown: false}} />
           )}
-          <Stack.Screen name="Signup">
+          <Stack.Screen name="Signup" options={{headerShown: false}}>
             {props => <SignupPage {...props} isNavigatorReady={isNavigatorReady} />}
           </Stack.Screen>
           <Stack.Screen name="Search" component={SearchPage} />
